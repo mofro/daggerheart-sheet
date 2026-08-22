@@ -32,7 +32,7 @@ export function Banner({ plugin, store, character }: BannerProps) {
       {next && (
         <button
           // the button wears the sigil of the character you'd swap TO
-          class={`ms-swap ms-swap--${next.characterType === "pc" ? "star" : "fox"}`}
+          class="ms-swap ms-swap--star"
           aria-label={`Swap to ${next.name}`}
           onClick={() => store.setActiveCharacter(next.id)}
         />

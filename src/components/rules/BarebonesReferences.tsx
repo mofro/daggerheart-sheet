@@ -37,7 +37,7 @@ export function BarebonesReferences({
 
   const docs = plugin.rulesIndex.docs.value;
   const linkedPaths = useMemo(
-    () => new Set(character.ruleLinks.map((l) => l.path)),
+    () => new Set((character.ruleLinks ?? []).map((l) => l.path)),
     [character.ruleLinks],
   );
   // Show the character's linked rules (parity with the old default); if none are

@@ -87,10 +87,10 @@ export function evaluateQAValue(
       base = ctx.totalLevel;
       break;
     case "abilityMod":
-      base = value.ability ? ctx.mods[value.ability] : 0;
+      base = value.ability ? (ctx.mods[value.ability] ?? 0) : 0;
       break;
     case "abilityScore":
-      base = value.ability ? ctx.scores[value.ability] : 0;
+      base = value.ability ? (ctx.scores[value.ability] ?? 0) : 0;
       break;
   }
   const divisor = value.divisor || 1;

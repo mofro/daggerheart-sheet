@@ -31,9 +31,7 @@ export class CharacterPickModal extends FuzzySuggestModal<CharacterRecord> {
   }
 
   getItemText(character: CharacterRecord): string {
-    const cls = character.classes
-      .map((c) => `${c.className} ${c.level}`)
-      .join(" / ");
+    const cls = character.className || "";
     return cls ? `${character.name} — ${cls}` : character.name;
   }
 
@@ -248,7 +246,7 @@ export class ImportRuleModal extends Modal {
 
     new Notice(`Imported "${result.title}"`);
     this.plugin.store.setTab("rules");
-    this.plugin.openRulePath.value = result.path ?? null;
+    // openRulePath removed in Daggerheart rewrite — tab switch is sufficient
     void this.plugin.activateView();
     this.close();
   }

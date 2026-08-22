@@ -460,7 +460,7 @@ export function seedQuickActionsFromToggles(
     state.preciseStrike = { stage: toggles.doublePreciseStrike ? 2 : 1 };
   }
   const songVariant =
-    toggles.weaponSong && toggles.weaponSong !== "Off"
+    typeof toggles.weaponSong === "string" && toggles.weaponSong !== "Off"
       ? SONG_VARIANT_BY_NAME.get(toggles.weaponSong)
       : undefined;
   if (songVariant) state.weaponSong = { stage: 1, variantId: songVariant };

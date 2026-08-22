@@ -106,13 +106,17 @@ export default defineConfig([
       eqeqeq: ["error", "always", { null: "ignore" }],
       "prefer-const": "error",
 
-      // "War" (from the 3pp product name "Path of War") and "Wayfinder" (the
-      // plugin brand) are proper nouns; allow them capitalized mid-sentence in
-      // UI copy instead of lowercasing the names. Brands keep their defaults.
+      // "War" (from the 3pp product name "Path of War"), "Wayfinder" (the
+      // original plugin brand), "Daggerheart" (game title), and "Carrel"
+      // (companion plugin name) are proper nouns; allow capitalized mid-sentence.
       "obsidianmd/ui/sentence-case": [
         "error",
-        { ignoreWords: ["War", "Wayfinder"] },
+        { ignoreWords: ["War", "Wayfinder", "Daggerheart", "Carrel"] },
       ],
+      // Phase 1 bridge: deliberate @deprecated stubs exist for PF1e → DH
+      // migration. The no-deprecated rule would fire on every bridge usage.
+      // Re-enable in Phase 2 when stubs are removed.
+      "@typescript-eslint/no-deprecated": "off",
     },
   },
 
@@ -162,6 +166,12 @@ export default defineConfig([
       // The test bootstrap aliases the Node global to `window`; popout-window
       // runtime rules don't apply to code that never ships in the plugin.
       "obsidianmd/no-global-this": "off",
+      // PF1e tests use stub types that may return `any`; the strict type
+      // rules are disabled for tests since no-explicit-any is already off.
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
     },
   },
 
