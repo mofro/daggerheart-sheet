@@ -169,6 +169,29 @@ export function CombatTab({
         </div>
       )}
 
+      {/* Rest actions */}
+      <div class="ms-dh-rests">
+        <button
+          class="ms-dh-rest-btn ms-dh-rest-btn--short"
+          onClick={() => store.updateCharacter(id, { stressCurrent: 0 })}
+          title="Clear all stress"
+        >
+          Short Rest
+        </button>
+        <button
+          class="ms-dh-rest-btn ms-dh-rest-btn--long"
+          onClick={() =>
+            store.updateCharacter(id, {
+              stressCurrent: 0,
+              hpCurrent: character.hpMax,
+            })
+          }
+          title="Restore HP to max and clear all stress"
+        >
+          Long Rest
+        </button>
+      </div>
+
     </div>
   );
 }

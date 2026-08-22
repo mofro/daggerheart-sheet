@@ -208,4 +208,45 @@
     font-weight: bold;
     white-space: nowrap;
   }
+
+  // -----------------------------------------------------------------------
+  // Rest actions
+  // -----------------------------------------------------------------------
+
+  .ms-dh-rests {
+    display: flex;
+    gap: 8px;
+    padding: 10px 4px 4px;
+    border-top: 1px solid var(--background-modifier-border);
+    margin-top: 8px;
+  }
+
+  .ms-dh-rest-btn {
+    flex: 1;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border: 1px solid var(--background-modifier-border);
+    background: transparent;
+    color: var(--text-muted);
+    box-shadow: none;
+    min-height: 0;
+    transition: background-color 0.1s, color 0.1s, border-color 0.1s;
+
+    &:hover {
+      background: var(--background-modifier-hover);
+      color: var(--text-normal);
+      border-color: var(--text-muted);
+    }
+
+    &--long:hover {
+      background: color-mix(in srgb, var(--ms-gold) 15%, transparent);
+      border-color: var(--ms-gold);
+      color: var(--ms-gold);
+    }
+  }
 }
