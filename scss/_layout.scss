@@ -1,0 +1,125 @@
+// Base sheet layout — ported from the v2 base CSS, renamed to .ms-* classes.
+
+.minisheet-root {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.ms-sheet {
+  width: 100%;
+  max-width: var(--ms-sheet-width);
+  margin: 0 auto;
+  font-family: var(--font-interface), sans-serif;
+  color: var(--text-normal);
+}
+
+/* Header */
+.ms-header {
+  position: relative;
+  text-align: center;
+  padding: 12px 8px 8px;
+}
+
+.ms-header__gear {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: 1.1em;
+  cursor: pointer;
+  min-width: 32px;
+  min-height: 32px;
+
+  &:hover {
+    color: var(--text-normal);
+  }
+}
+
+.ms-title {
+  font-family: var(--ms-font-display, "Norwester", sans-serif);
+  font-size: 1.4em;
+  margin: 0;
+  color: var(--text-normal);
+}
+
+.ms-subtitle {
+  font-family: var(--ms-font-label, "Taroca", sans-serif);
+  font-size: 0.75em;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Tab bar — old: sailKite TabsInObsidian tab cells. Each tab is a bordered
+   cell; the selected one opens its bottom border into the content frame
+   below; the strip's end cells round their outer top corners. */
+.ms-tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0;
+}
+
+.ms-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 0;
+  background-color: color-mix(
+    in srgb,
+    var(--background-primary) 60%,
+    transparent
+  );
+  box-shadow: none;
+  min-height: 32px;
+
+  & + .ms-tab {
+    border-left: none;
+  }
+
+  &:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 5px;
+  }
+
+  &:hover {
+    background-color: var(--background-modifier-hover);
+  }
+
+  &.is-active {
+    background-color: var(--background-secondary);
+    border-bottom-color: transparent;
+    pointer-events: none; /* old: selected tab is inert — no hover wash */
+  }
+}
+
+/* Content area — old: the tabbed-box callout frame (no top edge; the tab
+   strip's bottom borders complete it) */
+.ms-content {
+  padding: 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+}
+
+.ms-placeholder {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--text-muted);
+  font-size: 0.9em;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: 6px;
+}
+
+.ms-muted {
+  font-size: 0.8em;
+  opacity: 0.6;
+}

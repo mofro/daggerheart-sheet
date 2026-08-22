@@ -1,0 +1,661 @@
+/* ============================================================================
+   Quick Actions surface (config Effects category) — LITERAL mirror of the
+   combat-tab toggle grid + two zones, plus the centered editor/add/wizard
+   modals, effect rows, and icon picker. Ported from the design handoff,
+   scoped under .minisheet-config-root (modals render IN the config pane).
+   ============================================================================ */
+
+.minisheet-config-root {
+  /* ===========================================================================
+     Two-zone grid
+     =========================================================================== */
+  .qa-intro {
+    margin: 0 0 12px;
+  }
+
+  /* Detail strip: legend for the icon-only grid. Tracks the hovered /
+     focused / touched cell; defaults to the first on-sheet action. */
+  .qa-detail {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.12);
+    padding: 8px 10px;
+    margin: 0 0 12px;
+  }
+  .qa-detail__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .qa-detail__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    background: rgba(60, 60, 80, 0.3);
+    flex-shrink: 0;
+  }
+  .qa-detail__icon svg {
+    width: 17px;
+    height: 17px;
+    color: #fff;
+    opacity: 0.9;
+  }
+  .qa-detail__name {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--text-normal);
+  }
+  .qa-detail__where {
+    margin-left: auto;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-mute);
+  }
+  .qa-detail__summary {
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--text-muted, var(--text-mute));
+    white-space: normal;
+  }
+  .qa-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+  .qa-detail__tag {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--ms-gold, #ca9759) 14%, transparent);
+    color: var(--text-muted, var(--text-mute));
+  }
+  .qa-cell.is-focus .squircle {
+    box-shadow: 0 0 0 2px
+      color-mix(in srgb, var(--ms-gold, #ca9759) 70%, transparent);
+  }
+  .qa-zone {
+    margin-bottom: 14px;
+  }
+  .qa-zone__label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 10.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 6px;
+  }
+  .qa-zone__label .n {
+    color: var(--text-dim);
+  }
+  .qa-tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    padding: 7px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(0, 0, 0, 0.2);
+    min-height: 52px;
+    align-content: flex-start;
+    transition:
+      border-color 0.12s,
+      background 0.12s;
+  }
+  .qa-tray.is-over {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+  .qa-tray--bench {
+    background: rgba(0, 0, 0, 0.1);
+    border-style: dashed;
+  }
+  .qa-tray__empty {
+    color: var(--text-mute);
+    font-size: 12px;
+    padding: 6px;
+    align-self: center;
+  }
+
+  .qa-cell {
+    position: relative;
+    cursor: grab;
+    touch-action: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+  }
+  .qa-cell:active {
+    cursor: grabbing;
+  }
+  .qa-cell.is-drag {
+    opacity: 0.3;
+  }
+  .qa-cell.is-drop::before {
+    content: "";
+    position: absolute;
+    left: -3px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* the literal toggle: ~45x34, barely rounded, like the sheet */
+  .squircle {
+    width: 45px;
+    height: 34px;
+    border-radius: 4px;
+    background: rgba(60, 60, 80, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.12s;
+    flex-shrink: 0;
+  }
+  .squircle svg {
+    width: 23px;
+    height: 23px;
+    color: #fff;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+  .qa-cell:hover .squircle {
+    background: rgba(80, 80, 104, 0.42);
+  }
+  .squircle.is-on {
+    background: rgba(140, 30, 30, 0.72);
+  }
+  .squircle.is-on svg {
+    filter: drop-shadow(0 0 3px rgba(255, 100, 100, 0.7)) brightness(1.2);
+  }
+  .squircle.is-bench {
+    opacity: 0.55;
+  }
+  .qa-cell__badge {
+    position: absolute;
+    top: -4px;
+    right: -3px;
+    font-size: 8px;
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    background: var(--bg-soft);
+    color: var(--text-mute);
+    border-radius: 3px;
+    padding: 0 3px;
+    pointer-events: none;
+  }
+  .qa-add-cell {
+    cursor: pointer;
+  }
+  .qa-add-cell .squircle {
+    background: transparent;
+    border: 1px dashed var(--line-strong);
+  }
+  .qa-add-cell:hover .squircle {
+    border-color: var(--accent-line);
+  }
+  .qa-add-cell .squircle svg {
+    color: var(--text-mute);
+    width: 15px;
+    height: 15px;
+  }
+  .qa-hint {
+    font-size: 11.5px;
+    color: var(--text-mute);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* ===========================================================================
+     Centered modal (Obsidian-native) — editor, wizard, pickers
+     =========================================================================== */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 9, 12, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+    padding: 24px;
+  }
+  .modal {
+    width: min(560px, 100%);
+    max-height: 100%;
+    background: var(--bg-pane);
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5);
+  }
+  .modal--sm {
+    width: min(420px, 100%);
+  }
+  .modal__head {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal__head .squircle {
+    width: 42px;
+    height: 32px;
+    border-radius: 4px;
+    border: 0;
+    cursor: pointer;
+  }
+  .modal__head .squircle svg {
+    width: 20px;
+    height: 20px;
+  }
+  .modal__titles {
+    flex: 1;
+    min-width: 0;
+  }
+  .modal__title {
+    font-family: var(--ms-font-display, "Norwester", sans-serif);
+    font-size: 15.5px;
+    letter-spacing: 0.02em;
+  }
+  .modal__sub {
+    font-size: 11.5px;
+    color: var(--text-mute);
+  }
+  .modal__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+  }
+  .modal__foot {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .spacer {
+    flex: 1;
+  }
+
+  .block {
+    margin-bottom: 16px;
+  }
+  .block__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block__label .ln {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .iconpick__btn {
+    width: 44px;
+    height: 34px;
+    border-radius: 5px;
+    border: 1px solid var(--line-strong);
+    background: rgba(60, 60, 80, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    padding: 0;
+  }
+  .iconpick__btn svg {
+    width: 23px;
+    height: 23px;
+    flex-shrink: 0;
+  }
+
+  .ed-stage {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+  .ed-stage__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .ed-stage__no {
+    font-family: var(--ms-font-display, "Norwester", sans-serif);
+    font-size: 12.5px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .ed-stage__head .inp {
+    flex: 1;
+    width: auto;
+    min-height: 30px;
+  }
+
+  .effect {
+    background: var(--input);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 9px;
+    margin-bottom: 7px;
+  }
+  .effect__head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .effect__head .sel {
+    flex: 1;
+  }
+  .effect__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+  }
+  .effect__body .sel {
+    flex: 1;
+    min-width: 110px;
+  }
+  .effect__body .inp {
+    flex: 1;
+    width: auto;
+    min-width: 100px;
+  }
+  .effect__num {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  /* the value controls (number or whole formula) form their own wrapping
+     column to the right of the label + ƒ toggle, so when a wide formula
+     wraps, its rows hang aligned under the first input — not under the label */
+  .effect__num__vals {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+  }
+  .effect__num .num {
+    min-height: 30px;
+  }
+  .effect__ftoggle {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    padding: 0;
+    border-radius: 3px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+  .effect__ftoggle.is-on {
+    background: rgba(140, 30, 30, 0.6);
+    border-color: var(--accent-line);
+    color: #fff;
+  }
+
+  .menulist__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .menulist__item > svg {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .menulist__item .inp {
+    flex: 1;
+    width: auto;
+    min-height: 30px;
+  }
+  .menulist__item .menulist__sum {
+    font-size: 11px;
+    color: var(--text-mute);
+    flex: 1;
+  }
+
+  /* add-action picker list */
+  .picklist {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pickitem {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    box-shadow: none;
+  }
+  .pickitem:hover {
+    background: var(--bg-soft);
+  }
+  .pickitem.is-disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .pickitem .squircle {
+    width: 38px;
+    height: 28px;
+    border-radius: 4px;
+  }
+  .pickitem .squircle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .pickitem__t {
+    font-family: var(--ms-font-display, "Norwester", sans-serif);
+    font-size: 13.5px;
+  }
+  .pickitem__d {
+    font-size: 11.5px;
+    color: var(--text-mute);
+  }
+  .pickitem__on {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-mute);
+  }
+
+  .icongrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .icongrid button {
+    aspect-ratio: 1;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: rgba(60, 60, 80, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    padding: 0;
+    box-shadow: none;
+  }
+  .icongrid button:hover {
+    border-color: var(--accent-line);
+  }
+  .icongrid button.is-sel {
+    border-color: var(--accent);
+  }
+  .icongrid button svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  /* wizard */
+  .wizsteps {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .wizstep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wizstep__dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ms-font-display, "Norwester", sans-serif);
+    font-size: 12px;
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+  .wizstep__dot svg {
+    width: 13px;
+    height: 13px;
+  }
+  .wizstep.is-active .wizstep__dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #14161d;
+  }
+  .wizstep.is-done .wizstep__dot {
+    border-color: var(--accent-line);
+    color: var(--accent);
+  }
+  .wizstep__lbl {
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .wizstep.is-active .wizstep__lbl {
+    color: var(--text);
+  }
+  .wizstep__ln {
+    flex: 1;
+    height: 1.5px;
+    background: var(--line);
+    margin: 0 8px;
+  }
+  .wizstep__ln.is-done {
+    background: var(--accent-line);
+  }
+
+  .choice {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .choice__card {
+    text-align: left;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    color: var(--text);
+    box-shadow: none;
+  }
+  .choice__card:hover {
+    border-color: var(--accent-line);
+  }
+  .choice__card.is-sel {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .choice__ic {
+    color: var(--accent);
+    display: flex;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .choice__ic svg {
+    width: 17px;
+    height: 17px;
+  }
+  .choice__t {
+    font-family: var(--ms-font-display, "Norwester", sans-serif);
+    font-size: 13px;
+    display: block;
+  }
+  .choice__d {
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 2px;
+    line-height: 1.3;
+    display: block;
+  }
+
+  .review__row {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--line);
+  }
+  .review__row:last-child {
+    border-bottom: 0;
+  }
+  .review__row b {
+    flex: 0 0 96px;
+    color: var(--text-mute);
+    font-weight: 400;
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+}

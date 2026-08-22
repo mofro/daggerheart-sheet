@@ -1,0 +1,120 @@
+// Combat Toggles — ported from MiniSheet.css lines 1144-1687 ("Combat Options").
+// The old table/td:has()/Meta Bind checkbox scaffolding is dropped; each toggle
+// is now a real <button class="ms-toggle"> with state classes:
+//   .is-on     — active (dark red fill, glow, icon scale)
+//   .is-double — enhanced 3rd state (icon swap + pulse-glow animation)
+// Icons render as inline SVG via the Icon component (src/data/icons/registry.ts);
+// the original data-URI sources live in assets/icons/legacy/.
+
+/* Pulse animation (global keyframes; name preserved from the old sheet) */
+@keyframes pulse-glow-button {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(255, 100, 100, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 12px rgba(255, 100, 100, 0.8);
+  }
+}
+
+.minisheet-root {
+  /* Old layout: a centered table of 45x35 cells, 4 columns, with the
+     browser-default 2px border-spacing — the cells read as a fused grid. */
+  .ms-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    max-width: calc(4 * var(--ms-touch) + 6px);
+    margin: 0 auto;
+  }
+
+  /* Base toggle cell — old: 45x35 td + rgba(60,60,80,.3) checkbox container */
+  .ms-toggle {
+    position: relative;
+    width: var(--ms-touch);
+    height: 35px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background-color: rgba(60, 60, 80, 0.3);
+    box-shadow: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Inline-SVG icon layer (Icon component; fills with currentColor).
+     Geometry preserves the old ::before math: a 70%-inset box with
+     background-size 70% netted a centered icon ~49% of the button width. */
+  .ms-toggle .ms-icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 49%;
+    height: 80%; // content letterboxes to width via preserveAspectRatio
+    z-index: 10;
+    pointer-events: none;
+    color: white;
+    opacity: 0.9;
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Hover effect for the SVG */
+  .ms-toggle:hover .ms-icon {
+    opacity: 1;
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+  }
+
+  /* Active state — darker red fill, brighter scaled icon */
+  .ms-toggle.is-on {
+    background-color: rgba(140, 30, 30, 0.7);
+
+    .ms-icon {
+      opacity: 1;
+      filter: drop-shadow(0 0 4px rgba(255, 100, 100, 0.8)) brightness(1.3);
+      transform: scale(1.1);
+    }
+  }
+
+  /* Enhanced third state — pulsing glow (old "double" state styling) */
+  .ms-toggle.is-on.is-double {
+    background-color: rgba(140, 30, 30, 0.7);
+    box-shadow: 0 0 8px rgba(255, 100, 100, 0.6);
+    animation: pulse-glow-button 2s infinite;
+
+    .ms-icon {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px rgba(255, 100, 100, 0.8)) brightness(1.3);
+      transform: scale(1.1);
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Weapon Song — the toggle opens an Obsidian Menu; when a song is  */
+  /* active, a small caption below the grid shows the selection.      */
+  /* ---------------------------------------------------------------- */
+
+  .ms-toggles-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px; // breathing room below the attack blocks
+  }
+
+  .ms-toggle-song-label {
+    margin: 4px 0 0;
+    padding: 2px 10px;
+    min-height: 0;
+    height: auto;
+    border: none;
+    border-radius: 3px;
+    background: rgba(140, 30, 30, 0.7);
+    box-shadow: none;
+    color: white;
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 11px;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,568 @@
+// Spellbook tab — ported from legacy MiniSheet.css ~2762-2909 (spellbook
+// buttons), ~709-770 (collapse-clean callouts), and the inline styles the
+// renderers set in JS (spell rows, info lines, metamagic pills, SLA rows).
+// SVG data URIs are byte-identical to the legacy stylesheet.
+
+.minisheet-root {
+  /* ---- collapse-clean callout port ---- */
+  .ms-spellbook-callout {
+    margin: 1em 0;
+
+    .ms-spellbook-callout__title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+      font-family: var(--ms-font-display, "Norwester", sans-serif);
+      font-size: 1em;
+      font-weight: bold;
+      line-height: 1.2;
+      color: var(--text-normal);
+    }
+
+    .ms-spellbook-callout__fold {
+      flex-shrink: 0;
+      color: var(--text-normal);
+      transition: transform 100ms ease-in-out;
+    }
+
+    &.is-collapsed .ms-spellbook-callout__fold {
+      transform: rotate(-90deg);
+    }
+
+    .ms-spellbook-callout__content {
+      padding-top: 0;
+    }
+
+    /* legacy collapse-clean|sub: h6-sized title */
+    &--sub .ms-spellbook-callout__title {
+      font-size: 0.875em;
+    }
+  }
+
+  /* ---- spellbook action buttons (cast/remove/prepare) ---- */
+  .ms-spellbtn {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    min-width: 0;
+    min-height: 0;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border-radius: 15%;
+    border: 1px solid grey;
+    background-color: var(--color-accent);
+    box-shadow: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+
+    &:hover {
+      background-color: #8d0000;
+    }
+
+    /* cast: the legacy magic-wand SVG */
+    &--cast {
+      background-image: url("data:image/svg+xml;base64,PHN2ZyBzdHlsZT0iaGVpZ2h0OiAyOHB4OyB3aWR0aDogMjhweDsiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxnIGNsYXNzPSIiIHN0eWxlPSIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsMCkiPjxwYXRoIGQ9Ik0yNTAuNTMgMjIuMDNjLTU3LjA1NSA0NS4xNTctODAuNjczIDM3LjgxLTEwMC4zMS4yMiAxNi41OTggNjEuNTE3IDEwLjQwOCA2Ni40MTUtNDQuNzIgMTE2LjU5NCA2Ny4zMjQtMzUuNjY2IDk2LjIwNi0zNC4yMzggMTMwLjk3IDcuMTg3LTM0LjkwNi01My4xMTItMzAuOTU0LTc1LjM1IDE0LjA2LTEyNHptMTguNDA3LjEyNiAxMS42ODggMTE0LjkzOC05OS44NzUgNTguMDk0IDk3Ljc1IDIxLjA5M2MtOS41OCA4LjM1Mi0yMC4yMTQgMTkuMDI4LTMxLjI4IDMwLjA5NWwtLjAzMi4wM0wxOC41NjMgNDcyLjQzOHYxOS40MzhoMzIuMTU2TDI3My4zNDMgMjcyLjVjMTAuMjYtMTAuMjYzIDE4LjkwMi0xOS41MzggMjUuNzgtMjcuNzVsMTguOTM4IDg3Ljc1IDU4LjA5NC05OS44NzUgMTE0LjkzOCAxMS42ODgtNzcuMDMtODYuMDk0IDQ2LjY1NS0xMDUuNjktMTA1LjY5IDQ2LjY1Ny04Ni4wOTItNzcuMDN6TTI2Ljg3NSA1NS45MzhjMzMuNzY1IDI3LjY2IDM1LjIxIDQyLjc2NyAzMC43NSA4Ny43OCAxOC45NzUtNTMuNzMgMjcuOTY0LTY3LjI5NyA2NC41LTgyQzgyLjk3MiA3MS4wOTQgNjYuMjEgNzMgMjYuODc1IDU1Ljk0em01NC43NSAxMDIuNDA2YzI0Ljk1NSAyNy4wMTIgMjYuOTcgNDMuNjg0IDI0LjI1IDcyLjA2MiAxNC43NzUtMzQuNDUgMjIuMDcyLTQ1LjY2IDU1LjYyNS02NC4zMTItMzQuNTYgMTEuMTgzLTQ1LjUgMTAuMjItNzkuODc1LTcuNzV6bTMyNS41OTQgOTVjOS4yNyA1MS42OTQtNC42MSA3My43MDgtMzIuODQ1IDEwNi42ODcgNDMuMy0zNy4wNDMgNTcuODUyLTQ0LjI4NCA5Ni44NDQtMzguNzUtMzguNTk3LTExLjQ1Ny00Ny40MjYtMjAuNjI0LTY0LTY3LjkzNnptLTU1LjY1OCA3Mi44MTJjLTE4LjcwNSA2OC43OS00NS4zMDQgODMuOTQ0LTEwNy42MjUgNzAuMTI1IDU0LjEyNiAyMC4xIDU2LjM0IDIxLjA3IDUzLjUzMiA4NS4yNSAyNC43NTctNTUuNDIgNDYuNDktNTIuMjE3IDk1LjA2LTM3LjIxNy00MS43NzUtMzEuODM4LTQ1LjcxLTQ4Ljk3LTQwLjk2Ny0xMTguMTU3em0xMDkuMzQ0IDU1Ljk3Yy0xNS4zMiAxNy45OTQtMjIuOTMyIDE3LjQ5LTQzLjgxMiA5LjM0MyAyMi44MjggMTguNDQ0IDE3LjU5NiAzNC4wMjQgMTAuODQ0IDU5LjQwNSAxNi4wNS0xOS4xMiAyMy41MTYtMjUuMjM3IDUwLjMxMi0xMi42ODgtMjIuODYtMjEuMzQyLTI3LjEzLTI5Ljg1Ny0xNy4zNDQtNTYuMDYyeiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PC9nPjwvc3ZnPg==");
+      background-size: 18px 18px;
+    }
+
+    /* remove: serif x glyph */
+    &--remove::after {
+      content: "\00d7";
+      font-size: 30px;
+      font-weight: 600;
+      font-family: serif;
+      color: #fff;
+      line-height: 1;
+    }
+
+    /* prepare: serif + glyph */
+    &--prepare::after {
+      content: "+";
+      font-size: 26px;
+      font-weight: 700;
+      font-family: serif;
+      color: #fff;
+      line-height: 1;
+    }
+
+    /* at-will: dark grey with the infinity SVG, inert */
+    &.is-at-will {
+      background-color: #333333;
+      background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTYgMTZjNSAwIDctOCAxMi04YTQgNCAwIDAgMSAwIDhjLTUgMC03LTgtMTItOGE0IDQgMCAxIDAgMCA4Ii8+PC9zdmc+");
+      background-size: 16px 16px;
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  /* ---- known-spell rows (legacy inline styles) ---- */
+  .ms-spell {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+  }
+
+  .ms-spell__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .ms-spell__name {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.2;
+  }
+
+  .ms-spell__metamagic {
+    color: var(--ms-gold);
+    font-size: 0.85em;
+    font-weight: 500;
+  }
+
+  .ms-spell-info {
+    font-size: 0.68em;
+    color: #999;
+    margin-top: 3px;
+  }
+
+  .spell-link {
+    color: var(--link-color, #ca9759);
+  }
+
+  /* ---- per-level slot tracker placement ---- */
+  .ms-spell-slots {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+
+    &--none {
+      font-style: italic;
+      color: gray;
+      font-size: 0.85em;
+    }
+  }
+
+  /* ---- SLA rows ---- */
+  .ms-sla {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    gap: 10px;
+  }
+
+  .ms-sla__name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ms-sla__casts {
+    color: #888;
+    font-size: 0.85em;
+  }
+
+  .ms-sla__at-will {
+    font-style: italic;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* SLA trackers have no label text — collapse the label row */
+  .ms-sla .ms-resource__label:empty {
+    display: none;
+  }
+
+  /* ---- global metamagic picker ---- */
+  .ms-metamagic__picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ms-metamagic__select {
+    font-size: 0.9em;
+  }
+
+  .ms-metamagic__add {
+    width: 28px;
+    height: 28px;
+    min-width: 0;
+    padding: 0;
+    border: 1px solid grey;
+    border-radius: 15%;
+    background-color: var(--color-accent);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background-color: #8d0000;
+    }
+  }
+
+  .ms-metamagic__active {
+    margin-top: 8px;
+
+    > label {
+      display: block;
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+  }
+
+  .ms-metamagic__none {
+    color: #666;
+    font-style: italic;
+    font-size: 0.9em;
+  }
+
+  .ms-metamagic__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .ms-metamagic__pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 6px;
+    background-color: rgba(80, 80, 80, 0.2);
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    border-radius: 10px;
+    font-size: 0.8em;
+    white-space: nowrap;
+
+    .metamagic-name {
+      color: #fff;
+    }
+  }
+
+  .ms-metamagic__remove {
+    width: 18px;
+    height: 18px;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #c66;
+    font-size: 11px;
+    cursor: pointer;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    &:hover {
+      background: rgba(139, 0, 0, 0.3);
+      color: #fff;
+    }
+  }
+
+  /* ---- prepared/hybrid (M14) ---- */
+
+  /* indigo "↑N" adjusted-level indicator on known rows */
+  .ms-spell__level-adjust {
+    margin-left: 4px;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+
+  .ms-spell__level-arrow {
+    color: #6366f1;
+    font-weight: bold;
+  }
+
+  /* prepared entry row (legacy _createPreparedSpellEntry inline styles) */
+  .ms-prepared {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .ms-prepared__buttons {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .ms-prepared__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ms-prepared__name {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .ms-prepared__metamagic {
+    font-style: italic;
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
+
+  /* gold count dots (legacy createSpellCountDots) */
+  .ms-prepared__dots {
+    display: flex;
+    gap: 3px;
+    margin-left: 8px;
+    align-items: center;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .ms-prep-dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--ms-gold);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+  }
+
+  /* over-preparation warning (legacy orange box) */
+  .ms-overprep {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(255, 165, 0, 0.2);
+    border: 1px solid #ff8c00;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+    color: #d2691e;
+    font-weight: bold;
+    font-size: 0.9em;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+    }
+  }
+
+  /* hybrid dual trackers sit side by side, centered */
+  .ms-spell-slots--hybrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* ---- toolbar (spell DB shortcut + config gear) ---- */
+  .ms-spellbook__toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
+  }
+
+  /* ---- toolbar icon buttons (book / loadouts / config gear) — brand-seam
+     flat squircles with glyph icons, matching the equip/spell DB aesthetic ---- */
+  .ms-spellbook__db-btn,
+  .ms-spellbook-config__gear {
+    width: 1.9em;
+    height: 1.9em;
+    min-width: 0;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--ms-gold) 35%, transparent);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--ms-gold) 10%, transparent);
+    color: var(--ms-gold);
+    cursor: pointer;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--ms-gold) 20%, transparent);
+    }
+  }
+
+  /* ---- config gear + flyout (legacy config-gear-icon / config-flyout-menu) ---- */
+  .ms-spellbook-config {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .ms-spellbook-config__menu {
+    position: absolute;
+    top: 2.2em;
+    right: 0;
+    min-width: 230px;
+    max-width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    z-index: 60;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ms-spellbook-config__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.85em;
+
+    input[type="number"] {
+      width: 60px;
+    }
+  }
+
+  .ms-spellbook-config__separator {
+    height: 1px;
+    background: #444;
+    margin: 4px 0;
+  }
+
+  .ms-spellbook-config__manage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 7px;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--ms-gold) 35%, transparent);
+    background: color-mix(in srgb, var(--ms-gold) 8%, transparent);
+    color: var(--ms-gold);
+    cursor: pointer;
+    font-size: 0.85em;
+    box-shadow: none;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--ms-gold) 16%, transparent);
+    }
+  }
+
+  .ms-spellbook-config__section-title {
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #999;
+  }
+
+  .ms-spellbook-config__feats {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ms-spellbook-config__feat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    cursor: pointer;
+
+    &:hover {
+      background: #333;
+    }
+
+    &.is-owned {
+      background: rgba(139, 0, 0, 0.25);
+    }
+  }
+
+  .ms-spellbook-config__feat-name {
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  .ms-spellbook-config__feat-cost {
+    color: #999;
+    font-size: 0.9em;
+  }
+
+  .ms-spellbook-config__action {
+    background: var(--ms-red);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.4em 0.8em;
+    font-size: 0.85em;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+      background: #a52a2a;
+    }
+
+    &--danger {
+      background: #5a0000;
+
+      &:hover {
+        background: var(--ms-red);
+      }
+    }
+  }
+}

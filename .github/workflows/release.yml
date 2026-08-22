@@ -1,0 +1,76 @@
+name: Release Obsidian plugin
+
+# Obsidian/BRAT require the release tag to equal the manifest version exactly
+# (e.g. "0.1.0", no leading "v"). Push such a tag to cut a release.
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  # Required for actions/attest-build-provenance to mint artifact attestations.
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Block the release if the locked dependency tree has a known advisory —
+      # the store flags these, so fail here rather than after publishing.
+      - name: Audit dependencies
+        run: bun audit
+
+      - name: Verify tag matches manifest version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          MANIFEST_VERSION="$(jq -r .version manifest.json)"
+          if [ "$TAG" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag '$TAG' does not match manifest.json version '$MANIFEST_VERSION'."
+            echo "Tag the commit with exactly the manifest version (no 'v' prefix)."
+            exit 1
+          fi
+
+      - name: Build (production)
+        run: bun run build:prod
+
+      # Cryptographically attest that these assets were built from this repo by
+      # this workflow, so users can verify provenance with `gh attestation verify`.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            styles.css
+
+      - name: Build release notes from changelog
+        run: |
+          NOTES="$(awk -v tag="$GITHUB_REF_NAME" '$1 == "##" && $2 == tag {grab=1; next} $1 == "##" {grab=0} grab' CHANGELOG.md)"
+          if [ -z "$(printf '%s' "$NOTES" | tr -d '[:space:]')" ]; then
+            NOTES="Wayfinder $GITHUB_REF_NAME."
+          fi
+          {
+            printf '%s\n\n' "$NOTES"
+            printf 'Install the three attached files into `<vault>/.obsidian/plugins/wayfinder/`, or add the repo via BRAT.\n'
+          } > RELEASE_NOTES.md
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes-file RELEASE_NOTES.md \
+            main.js styles.css manifest.json

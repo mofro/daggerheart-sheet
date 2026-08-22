@@ -1,0 +1,51 @@
+{
+  "name": "daggerheart-sheet",
+  "version": "0.1.0",
+  "description": "Daggerheart character sheet plugin for Obsidian",
+  "type": "module",
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
+    "build:css": "sass scss/main.scss styles.css --no-source-map --no-charset",
+    "build:css:watch": "sass scss/main.scss styles.css --no-source-map --no-charset --watch",
+    "build": "bun run build:css && bun esbuild.config.mjs",
+    "build:prod": "bun run build:css && bun esbuild.config.mjs production",
+    "build:watch": "bun esbuild.config.mjs --watch",
+    "deploy": "bun run build && bun scripts/deploy.mjs",
+    "gen:icons": "bun scripts/generate-icons.mjs",
+    "scrape:equipment": "bun scripts/scrape-equipment/index.ts",
+    "scrape:rules": "bun scripts/scrape-rules/index.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"tests/**/*.ts\" \"scss/**/*.scss\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"tests/**/*.ts\" \"scss/**/*.scss\"",
+    "check": "bun run typecheck && bun run lint && bun run format:check && bun run test:unit",
+    "audit": "bun audit",
+    "preflight": "bun run check && bun run audit && bun run build:prod",
+    "test:unit": "vitest run --config vitest.unit.config.ts"
+  },
+  "devDependencies": {
+    "@preact/signals": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-obsidianmd": "^0.3.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "node-html-parser": "^7.1.0",
+    "obsidian": "^1.11.0",
+    "preact": "^10.26.0",
+    "prettier": "^3.4.0",
+    "sass": "^1.83.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "rollup": "^4.62.0",
+    "vite": "^6.4.3",
+    "esbuild": "^0.28.1",
+    "postcss": "^8.5.15"
+  },
+  "license": "MIT"
+}
