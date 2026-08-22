@@ -40,6 +40,29 @@ export class CharacterPickModal extends FuzzySuggestModal<CharacterRecord> {
   }
 }
 
+/** Pick any markdown note from the vault (used for domain card links). */
+export class VaultNotePicker extends FuzzySuggestModal<TFile> {
+  private onChoose: (file: TFile) => void;
+
+  constructor(app: App, onChoose: (file: TFile) => void) {
+    super(app);
+    this.setPlaceholder("Search vault notes…");
+    this.onChoose = onChoose;
+  }
+
+  getItems(): TFile[] {
+    return this.app.vault.getMarkdownFiles();
+  }
+
+  getItemText(file: TFile): string {
+    return file.path;
+  }
+
+  onChooseItem(file: TFile): void {
+    this.onChoose(file);
+  }
+}
+
 /** Pick a markdown note (used to choose the legacy sheet to import). */
 export class NotePickModal extends FuzzySuggestModal<TFile> {
   private onChoose: (file: TFile) => void;

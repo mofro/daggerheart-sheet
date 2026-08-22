@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import type MiniSheetPlugin from "../../main";
+import { VaultNotePicker } from "../../modals";
 import type { MiniSheetStore } from "../../state/store";
 import type { CharacterRecord } from "../../types/character";
 import {
@@ -77,6 +78,12 @@ const IconTrash = () =>
 
 const IconX = () =>
   IC(<path d="M18 6L6 18M6 6l12 12" />);
+
+const IconLink = () =>
+  IC(<>
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </>);
 
 const RAIL_ITEMS = [
   { id: "identity" as const, label: "Identity", Icon: IconUser },
@@ -306,7 +313,11 @@ function DefensesSection({ c, upd }: SectionProps) {
 // Section: Domains
 // ─────────────────────────────────────────────────────────────────────────────
 
-function DomainsSection({ c, upd }: SectionProps) {
+function DomainsSection({
+  c,
+  upd,
+  plugin,
+}: SectionProps & { plugin: MiniSheetPlugin }) {
   const setCards = (cards: DomainCardEntry[]) => upd({ domainCards: cards });
   const addCard = () =>
     setCards([...c.domainCards, { name: "", domain: "", notes: "" }]);
@@ -314,6 +325,12 @@ function DomainsSection({ c, upd }: SectionProps) {
     setCards(c.domainCards.filter((_, j) => j !== i));
   const patchCard = (i: number, patch: Partial<DomainCardEntry>) =>
     setCards(c.domainCards.map((card, j) => (j === i ? { ...card, ...patch } : card)));
+
+  function openNotePicker(i: number) {
+    new VaultNotePicker(plugin.app, (file) => {
+      patchCard(i, { noteRef: file.path });
+    }).open();
+  }
 
   return (
     <>
@@ -365,11 +382,28 @@ function DomainsSection({ c, upd }: SectionProps) {
               <div class="f__control cfg-row-end">
                 <input class="inp cfg-flex" value={card.name} placeholder="Name"
                   onInput={e => patchCard(i, { name: strVal(e) })} />
+                <button class="iconbtn" title="Link vault note" onClick={() => openNotePicker(i)}>
+                  <IconLink />
+                </button>
                 <button class="iconbtn" title="Remove card" onClick={() => removeCard(i)}>
                   <IconX />
                 </button>
               </div>
             </div>
+            {card.noteRef && (
+              <div class="cfg-note-ref">
+                <span class="cfg-note-ref__path" title={card.noteRef}>
+                  {card.noteRef.split("/").pop()?.replace(/\.md$/, "") ?? card.noteRef}
+                </span>
+                <button
+                  class="cfg-note-ref__clear"
+                  title="Remove link"
+                  onClick={() => patchCard(i, { noteRef: undefined })}
+                >
+                  ×
+                </button>
+              </div>
+            )}
             <div class="f">
               <label class="f__label">Domain</label>
               <div class="f__control">
@@ -495,7 +529,7 @@ function DangerSection({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function ConfigSurface({
-  plugin: _plugin, // reserved for future vault-note picker
+  plugin,
   store,
   character,
   onClose,
@@ -536,7 +570,7 @@ export function ConfigSurface({
             {section === "identity" && <IdentitySection c={character} upd={upd} />}
             {section === "traits" && <TraitsSection c={character} upd={upd} />}
             {section === "defenses" && <DefensesSection c={character} upd={upd} />}
-            {section === "domains" && <DomainsSection c={character} upd={upd} />}
+            {section === "domains" && <DomainsSection c={character} upd={upd} plugin={plugin} />}
             {section === "connections" && <ConnectionsSection c={character} upd={upd} />}
             {section === "danger" && (
               <DangerSection c={character} store={store} onClose={onClose} />
