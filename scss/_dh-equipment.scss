@@ -1,0 +1,221 @@
+// Daggerheart Equipment tab — weapons, armor, gold, inventory.
+
+.minisheet-root {
+  .ms-dh-equipment-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // -----------------------------------------------------------------------
+  // Weapon + armor blocks
+  // -----------------------------------------------------------------------
+
+  .ms-dh-weapon-block,
+  .ms-dh-armor-block {
+    padding: 6px 0;
+
+    & + & {
+      border-top: 1px solid var(--background-modifier-border);
+    }
+  }
+
+  .ms-dh-armor-block {
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-weapon-block__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-weapon-block__row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-weapon-block__name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85em;
+  }
+
+  .ms-dh-weapon-block__damage {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85em;
+  }
+
+  .ms-dh-weapon-block__select {
+    width: 90px;
+    flex: 0 0 auto;
+    font-size: 0.8em;
+  }
+
+  .ms-dh-weapon-block__feature {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.8em;
+    resize: vertical;
+    min-height: 36px;
+    margin-top: 2px;
+  }
+
+  // Armor score inline pair
+  .ms-dh-armor-block__score {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+
+    input[type="number"] {
+      width: 44px;
+      text-align: center;
+      font-size: 0.85em;
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
+
+  .ms-dh-armor-block__score-label {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  // -----------------------------------------------------------------------
+  // Gold
+  // -----------------------------------------------------------------------
+
+  .ms-dh-gold {
+    padding: 6px 0;
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-gold__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-gold__row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .ms-dh-gold__denom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    input[type="number"] {
+      width: 52px;
+      text-align: center;
+      font-size: 1em;
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
+
+  .ms-dh-gold__denom-label {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    text-transform: capitalize;
+  }
+
+  // -----------------------------------------------------------------------
+  // Inventory
+  // -----------------------------------------------------------------------
+
+  .ms-dh-inventory {
+    padding: 6px 0;
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-inventory__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-inventory__empty {
+    font-size: 0.8em;
+    color: var(--text-faint);
+    text-align: center;
+    padding: 4px 0;
+  }
+
+  .ms-dh-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 0.82em;
+
+    & + .ms-dh-item {
+      border-top: 1px solid var(--background-modifier-border);
+    }
+  }
+
+  .ms-dh-item__qty {
+    color: var(--text-muted);
+    flex: 0 0 auto;
+    min-width: 22px;
+    text-align: right;
+  }
+
+  .ms-dh-item__name {
+    font-weight: 500;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ms-dh-item__desc {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    flex: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ms-dh-item__remove {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 0 2px;
+    min-height: 0;
+    font-size: 1em;
+    line-height: 1;
+
+    &:hover {
+      color: var(--ms-red);
+    }
+  }
+}

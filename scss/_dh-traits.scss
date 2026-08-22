@@ -1,0 +1,144 @@
+// Daggerheart Traits tab — identity line, six trait rows, XP pips, heritage.
+
+.minisheet-root {
+  // -----------------------------------------------------------------------
+  // Identity header
+  // -----------------------------------------------------------------------
+
+  .ms-dh-identity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 6px 4px 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 8px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+  }
+
+  .ms-dh-identity__class {
+    color: var(--text-normal);
+    font-weight: 500;
+  }
+
+  .ms-dh-identity__sep {
+    color: var(--text-faint);
+  }
+
+  // -----------------------------------------------------------------------
+  // Trait table
+  // -----------------------------------------------------------------------
+
+  .ms-dh-traits {
+    padding: 0 4px 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 8px;
+  }
+
+  .ms-dh-traits__header {
+    display: grid;
+    grid-template-columns: 1fr 56px 40px;
+    gap: 0 8px;
+    padding: 2px 4px 4px;
+  }
+
+  .ms-dh-traits__col-label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.65em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    text-align: center;
+  }
+
+  .ms-dh-trait {
+    display: grid;
+    grid-template-columns: 1fr 56px 40px;
+    gap: 0 8px;
+    align-items: center;
+    padding: 3px 4px;
+
+    & + .ms-dh-trait {
+      border-top: 1px solid var(--background-modifier-border);
+    }
+  }
+
+  .ms-dh-trait__label {
+    font-size: 0.85em;
+    color: var(--text-normal);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .ms-dh-trait__base {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 0.9em;
+    height: 28px;
+    padding: 0 4px;
+    // hide spinners for a cleaner look
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+  }
+
+  .ms-dh-trait__mod {
+    font-size: 1em;
+    font-weight: bold;
+    font-family: serif;
+    color: var(--ms-gold);
+    text-align: center;
+  }
+
+  // -----------------------------------------------------------------------
+  // XP marks
+  // -----------------------------------------------------------------------
+
+  .ms-dh-xp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 8px;
+  }
+
+  .ms-dh-xp__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    white-space: nowrap;
+  }
+
+  .ms-dh-xp__pips {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+
+  // -----------------------------------------------------------------------
+  // Heritage (ancestry + community)
+  // -----------------------------------------------------------------------
+
+  .ms-dh-heritage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 4px 2px;
+    font-size: 0.8em;
+    color: var(--text-muted);
+  }
+
+  .ms-dh-heritage__sep {
+    color: var(--text-faint);
+  }
+}

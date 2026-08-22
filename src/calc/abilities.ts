@@ -52,7 +52,7 @@ export function effectiveScores(input: AbilityModInput): AbilityScores {
       num(input.typed?.[key]) -
       num(input.drain?.[key]) -
       num(input.damage?.[key]);
-    out[key] = input.base[key] + offset;
+    out[key] = (input.base[key] ?? 0) + offset;
   }
   return out;
 }
@@ -61,7 +61,7 @@ export function abilityMods(input: AbilityModInput): AbilityScores {
   const scores = effectiveScores(input);
   const out = {} as AbilityScores;
   for (const key of ABILITY_KEYS) {
-    out[key] = Math.floor((scores[key] - 10) / 2);
+    out[key] = Math.floor(((scores[key] ?? 0) - 10) / 2);
   }
   return out;
 }

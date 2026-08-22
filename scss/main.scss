@@ -4,6 +4,10 @@
 @use "layout";
 @use "config";
 @use "combat";
+@use "dh-combat";
+@use "dh-traits";
+@use "dh-class";
+@use "dh-equipment";
 @use "ac-shield";
 @use "hp-droplet";
 @use "banner";
