@@ -4,9 +4,7 @@ import { installBridge, removeBridge } from "./bridge/mcp-bridge";
 import {
   PLUGIN_ID,
   VIEW_TYPE_CONFIG,
-  VIEW_TYPE_EQUIP_DB,
   VIEW_TYPE_MINISHEET,
-  VIEW_TYPE_PARTY_INV,
 } from "./constants";
 import {
   CharacterPickModal,
@@ -18,8 +16,6 @@ import { MiniSheetSettingTab } from "./settings";
 import { CustomItemsStore } from "./state/custom-items";
 import { MiniSheetStore } from "./state/store";
 import { ConfigView } from "./views/ConfigView";
-import { EquipmentDatabaseView } from "./views/EquipmentDatabaseView";
-import { PartyInventoryView } from "./views/PartyInventoryView";
 import { SheetView } from "./views/SheetView";
 
 export default class MiniSheetPlugin extends Plugin {
@@ -44,15 +40,7 @@ export default class MiniSheetPlugin extends Plugin {
     this.rulesIndex.init();
 
     this.registerView(VIEW_TYPE_MINISHEET, (leaf) => new SheetView(leaf, this));
-    this.registerView(
-      VIEW_TYPE_PARTY_INV,
-      (leaf) => new PartyInventoryView(leaf, this),
-    );
     this.registerView(VIEW_TYPE_CONFIG, (leaf) => new ConfigView(leaf, this));
-    this.registerView(
-      VIEW_TYPE_EQUIP_DB,
-      (leaf) => new EquipmentDatabaseView(leaf, this),
-    );
 
     this.addRibbonIcon("shield", "Daggerheart sheet", () => {
       void this.activateView();
@@ -98,12 +86,6 @@ export default class MiniSheetPlugin extends Plugin {
         if (!this.store.getCharacter()) return;
         void this.activateConfigView();
       },
-    });
-
-    this.addCommand({
-      id: "open-party-inventory",
-      name: "Open party inventory",
-      callback: () => void this.activatePartyInvView(),
     });
 
     this.addCommand({
@@ -156,28 +138,6 @@ export default class MiniSheetPlugin extends Plugin {
       leaf = workspace.getRightLeaf(false);
       if (!leaf) return;
       await leaf.setViewState({ type: VIEW_TYPE_MINISHEET, active: true });
-    }
-    await workspace.revealLeaf(leaf);
-  }
-
-  async activateEquipDbView(): Promise<void> {
-    const { workspace } = this.app;
-    let leaf: WorkspaceLeaf | null =
-      workspace.getLeavesOfType(VIEW_TYPE_EQUIP_DB)[0] ?? null;
-    if (!leaf) {
-      leaf = workspace.getLeaf("tab");
-      await leaf.setViewState({ type: VIEW_TYPE_EQUIP_DB, active: true });
-    }
-    await workspace.revealLeaf(leaf);
-  }
-
-  async activatePartyInvView(): Promise<void> {
-    const { workspace } = this.app;
-    let leaf: WorkspaceLeaf | null =
-      workspace.getLeavesOfType(VIEW_TYPE_PARTY_INV)[0] ?? null;
-    if (!leaf) {
-      leaf = workspace.getLeaf("tab");
-      await leaf.setViewState({ type: VIEW_TYPE_PARTY_INV, active: true });
     }
     await workspace.revealLeaf(leaf);
   }
