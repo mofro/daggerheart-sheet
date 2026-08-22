@@ -1,0 +1,163 @@
+// Daggerheart Class tab — feature sections, domain badges, domain cards,
+// ancestry/community features, connections.
+
+.minisheet-root {
+  .ms-dh-class-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // -----------------------------------------------------------------------
+  // Feature sections (class features, ancestry, etc.)
+  // -----------------------------------------------------------------------
+
+  .ms-dh-feature {
+    padding: 4px 0 6px;
+
+    & + .ms-dh-feature {
+      border-top: 1px solid var(--background-modifier-border);
+    }
+  }
+
+  .ms-dh-feature__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 3px;
+  }
+
+  .ms-dh-feature__text {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.82em;
+    resize: vertical;
+    min-height: 48px;
+  }
+
+  // -----------------------------------------------------------------------
+  // Domains
+  // -----------------------------------------------------------------------
+
+  .ms-dh-domains {
+    padding: 4px 0 6px;
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-domains__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-domains__chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .ms-dh-domain-chip {
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--ms-gold);
+    color: var(--ms-gold);
+    font-size: 0.75em;
+  }
+
+  // -----------------------------------------------------------------------
+  // Domain cards
+  // -----------------------------------------------------------------------
+
+  .ms-dh-domain-cards {
+    padding: 4px 0 6px;
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-domain-cards__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-domain-card {
+    padding: 4px 0;
+    border-top: 1px solid var(--background-modifier-border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+
+    &:first-of-type {
+      border-top: none;
+    }
+  }
+
+  .ms-dh-domain-card__name {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: var(--text-normal);
+  }
+
+  .ms-dh-domain-card__domain {
+    font-size: 0.72em;
+    color: var(--ms-gold);
+    border: 1px solid var(--ms-gold);
+    border-radius: 8px;
+    padding: 1px 6px;
+  }
+
+  .ms-dh-domain-card__notes {
+    width: 100%;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+  }
+
+  // -----------------------------------------------------------------------
+  // Connections
+  // -----------------------------------------------------------------------
+
+  .ms-dh-connections {
+    padding: 4px 0 2px;
+    border-top: 1px solid var(--background-modifier-border);
+  }
+
+  .ms-dh-connections__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+    margin-bottom: 4px;
+  }
+
+  .ms-dh-connection {
+    display: flex;
+    flex-direction: column;
+    padding: 3px 0;
+    font-size: 0.82em;
+
+    & + .ms-dh-connection {
+      border-top: 1px solid var(--background-modifier-border);
+    }
+  }
+
+  .ms-dh-connection__name {
+    font-weight: 500;
+    color: var(--text-normal);
+  }
+
+  .ms-dh-connection__desc {
+    color: var(--text-muted);
+    font-size: 0.9em;
+  }
+}

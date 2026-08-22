@@ -5,6 +5,9 @@ import type { MiniSheetStore } from "../state/store";
 import { getCarrelApi } from "../util/carrel";
 import { Banner } from "./combat/Banner";
 import { CombatTab } from "./combat/CombatTab";
+import { TraitsTab } from "./traits/TraitsTab";
+import { ClassTab } from "./class/ClassTab";
+import { EquipmentTab } from "./equipment/EquipmentTab";
 import { BarebonesReferences } from "./rules/BarebonesReferences";
 import { CarrelEmbed } from "./rules/CarrelEmbed";
 
@@ -67,6 +70,27 @@ export function App({ plugin, store }: AppProps) {
       <main class="ms-content">
         {active === "combat" ? (
           <CombatTab
+            plugin={plugin}
+            store={store}
+            character={character}
+            computed={computed}
+          />
+        ) : active === "traits" ? (
+          <TraitsTab
+            plugin={plugin}
+            store={store}
+            character={character}
+            computed={computed}
+          />
+        ) : active === "class" ? (
+          <ClassTab
+            plugin={plugin}
+            store={store}
+            character={character}
+            computed={computed}
+          />
+        ) : active === "equipment" ? (
+          <EquipmentTab
             plugin={plugin}
             store={store}
             character={character}
