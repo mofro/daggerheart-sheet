@@ -210,6 +210,57 @@
   }
 
   // -----------------------------------------------------------------------
+  // Hope Feature quick-ref card
+  // -----------------------------------------------------------------------
+
+  .ms-dh-hope-feature {
+    border-top: 1px solid var(--background-modifier-border);
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 8px;
+  }
+
+  .ms-dh-hope-feature__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px 2px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    min-height: 0;
+  }
+
+  .ms-dh-hope-feature__label {
+    font-family: var(--ms-font-label, "Taroca", sans-serif);
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ms-gold);
+  }
+
+  .ms-dh-hope-feature__chevron {
+    width: 10px;
+    height: 10px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: rotate(45deg);
+    flex: 0 0 auto;
+    transition: transform 0.15s;
+
+    &.is-open { transform: rotate(-135deg); }
+  }
+
+  .ms-dh-hope-feature__body {
+    padding: 0 2px 8px;
+    font-size: 0.82em;
+    color: var(--text-normal);
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  // -----------------------------------------------------------------------
   // Rest actions
   // -----------------------------------------------------------------------
 

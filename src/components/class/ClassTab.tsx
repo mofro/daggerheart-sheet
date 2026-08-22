@@ -73,6 +73,13 @@ export function ClassTab({
         onChange={(v) => patch({ masteryFeature: v })}
       />
 
+      <FeatureSection
+        label="Hope Feature"
+        value={character.hopeFeature}
+        placeholder="What happens when you spend Hope…"
+        onChange={(v) => patch({ hopeFeature: v })}
+      />
+
       {/* Extra features */}
       {character.extraFeatures.map((feat, idx) => (
         <FeatureSection

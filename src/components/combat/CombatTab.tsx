@@ -54,6 +54,7 @@ export function CombatTab({
 }) {
   const id = character.id;
   const [showCondNotes, setShowCondNotes] = useState(false);
+  const [hopeOpen, setHopeOpen] = useState(false);
 
   const activeConditions = Object.values(character.conditions).filter(Boolean).length;
 
@@ -146,6 +147,22 @@ export function CombatTab({
           )
         )}
       </div>
+
+      {/* Hope Feature quick-ref — only shown when text is set */}
+      {character.hopeFeature && (
+        <div class="ms-dh-hope-feature">
+          <button
+            class="ms-dh-hope-feature__header"
+            onClick={() => setHopeOpen((o) => !o)}
+          >
+            <span class="ms-dh-hope-feature__label">Hope Feature</span>
+            <span class={`ms-dh-hope-feature__chevron${hopeOpen ? " is-open" : ""}`} />
+          </button>
+          {hopeOpen && (
+            <div class="ms-dh-hope-feature__body">{character.hopeFeature}</div>
+          )}
+        </div>
+      )}
 
       {/* Weapons quick-reference */}
       {(character.primaryWeapon.name || character.secondaryWeapon.name) && (
