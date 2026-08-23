@@ -28,10 +28,10 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Block the release if the locked dependency tree has a known advisory —
-      # the store flags these, so fail here rather than after publishing.
+      # Audit only production deps — dev tooling (ESLint, sass, vitest) doesn't
+      # ship in main.js and its advisories shouldn't block a user-facing release.
       - name: Audit dependencies
-        run: bun audit
+        run: bun audit --production
 
       - name: Verify tag matches manifest version
         run: |
