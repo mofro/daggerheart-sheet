@@ -150,13 +150,103 @@
     border-top: 1px solid var(--background-modifier-border);
   }
 
+  .ms-dh-inventory__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
   .ms-dh-inventory__label {
     font-family: var(--ms-font-label, "Taroca", sans-serif);
     font-size: 0.7em;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--ms-gold);
-    margin-bottom: 4px;
+  }
+
+  .ms-dh-inventory__add-btn {
+    font-size: 0.75em;
+    color: var(--text-faint);
+    background: none;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    padding: 0 2px;
+    min-height: 0;
+
+    &:hover { color: var(--text-muted); }
+  }
+
+  // Inline add-item form
+  .ms-dh-item-form {
+    padding: 6px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    & + .ms-dh-item { border-top: 1px solid var(--background-modifier-border); }
+  }
+
+  .ms-dh-item-form__row {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ms-dh-item-form__name {
+    flex: 1;
+    font-size: 0.85em;
+  }
+
+  .ms-dh-item-form__qty {
+    width: 48px;
+    text-align: center;
+    font-size: 0.85em;
+    flex: 0 0 auto;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button { -webkit-appearance: none; }
+  }
+
+  .ms-dh-item-form__desc {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.82em;
+  }
+
+  .ms-dh-item-form__actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .ms-dh-item-form__save {
+    font-size: 0.78em;
+    padding: 3px 10px;
+    background: var(--ms-gold);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: none;
+    min-height: 0;
+
+    &:disabled { opacity: 0.4; cursor: default; }
+    &:not(:disabled):hover { filter: brightness(1.1); }
+  }
+
+  .ms-dh-item-form__cancel {
+    font-size: 0.78em;
+    padding: 3px 10px;
+    background: none;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    box-shadow: none;
+    min-height: 0;
+
+    &:hover { color: var(--text-normal); border-color: var(--text-muted); }
   }
 
   .ms-dh-inventory__empty {

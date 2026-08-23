@@ -59,11 +59,11 @@ jobs:
         run: |
           NOTES="$(awk -v tag="$GITHUB_REF_NAME" '$1 == "##" && $2 == tag {grab=1; next} $1 == "##" {grab=0} grab' CHANGELOG.md)"
           if [ -z "$(printf '%s' "$NOTES" | tr -d '[:space:]')" ]; then
-            NOTES="Wayfinder $GITHUB_REF_NAME."
+            NOTES="Daggerheart Sheet $GITHUB_REF_NAME."
           fi
           {
             printf '%s\n\n' "$NOTES"
-            printf 'Install the three attached files into `<vault>/.obsidian/plugins/wayfinder/`, or add the repo via BRAT.\n'
+            printf 'Install the three attached files into `<vault>/.obsidian/plugins/daggerheart-sheet/`, or add the repo via BRAT.\n'
           } > RELEASE_NOTES.md
 
       - name: Create GitHub release

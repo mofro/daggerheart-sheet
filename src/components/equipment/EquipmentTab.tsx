@@ -1,3 +1,4 @@
+import { useState } from "preact/hooks";
 import type MiniSheetPlugin from "../../main";
 import type { MiniSheetStore } from "../../state/store";
 import type { CharacterRecord } from "../../types/character";
@@ -118,6 +119,8 @@ function ArmorBlock({
   );
 }
 
+const EMPTY_DRAFT = { name: "", description: "", quantity: 1 };
+
 export function EquipmentTab({
   store,
   character,
@@ -129,6 +132,22 @@ export function EquipmentTab({
 }) {
   const id = character.id;
   const patch = (p: Partial<CharacterRecord>) => store.updateCharacter(id, p);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState(EMPTY_DRAFT);
+
+  function commitAdd() {
+    const name = draft.name.trim();
+    if (!name) return;
+    const newItem = {
+      id: Math.random().toString(36).slice(2),
+      name,
+      description: draft.description.trim(),
+      quantity: Math.max(1, draft.quantity),
+    };
+    patch({ inventory: [...character.inventory, newItem] });
+    setDraft(EMPTY_DRAFT);
+    setAdding(false);
+  }
 
   return (
     <div class="ms-dh-equipment-tab">
@@ -179,7 +198,18 @@ export function EquipmentTab({
 
       {/* Inventory */}
       <div class="ms-dh-inventory">
-        <div class="ms-dh-inventory__label">Inventory</div>
+        <div class="ms-dh-inventory__header">
+          <span class="ms-dh-inventory__label">Inventory</span>
+          {!adding && (
+            <button
+              class="ms-dh-inventory__add-btn"
+              onClick={() => setAdding(true)}
+            >
+              + Add
+            </button>
+          )}
+        </div>
+
         {character.inventory.map((item, idx) => (
           <div key={item.id} class="ms-dh-item">
             <span class="ms-dh-item__qty">×{item.quantity}</span>
@@ -200,8 +230,68 @@ export function EquipmentTab({
             </button>
           </div>
         ))}
-        {character.inventory.length === 0 && (
+
+        {character.inventory.length === 0 && !adding && (
           <div class="ms-dh-inventory__empty">No items</div>
+        )}
+
+        {adding && (
+          <div class="ms-dh-item-form">
+            <div class="ms-dh-item-form__row">
+              <input
+                class="ms-dh-item-form__name"
+                type="text"
+                placeholder="Item name"
+                value={draft.name}
+                autoFocus
+                onInput={(e) =>
+                  setDraft({ ...draft, name: (e.target as HTMLInputElement).value })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commitAdd();
+                  if (e.key === "Escape") { setAdding(false); setDraft(EMPTY_DRAFT); }
+                }}
+              />
+              <input
+                class="ms-dh-item-form__qty"
+                type="number"
+                min={1}
+                value={draft.quantity}
+                onChange={(e) =>
+                  setDraft({ ...draft, quantity: parseInt((e.target as HTMLInputElement).value, 10) || 1 })
+                }
+                aria-label="Quantity"
+              />
+            </div>
+            <input
+              class="ms-dh-item-form__desc"
+              type="text"
+              placeholder="Description (optional)"
+              value={draft.description}
+              onInput={(e) =>
+                setDraft({ ...draft, description: (e.target as HTMLInputElement).value })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitAdd();
+                if (e.key === "Escape") { setAdding(false); setDraft(EMPTY_DRAFT); }
+              }}
+            />
+            <div class="ms-dh-item-form__actions">
+              <button
+                class="ms-dh-item-form__save"
+                onClick={commitAdd}
+                disabled={!draft.name.trim()}
+              >
+                Add
+              </button>
+              <button
+                class="ms-dh-item-form__cancel"
+                onClick={() => { setAdding(false); setDraft(EMPTY_DRAFT); }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         )}
       </div>
 

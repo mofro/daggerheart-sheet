@@ -174,6 +174,8 @@ export interface DaggerheartCharacter {
   specializationFeature: string;
   masteryFeature: string;
   extraFeatures: ExtraFeature[];
+  /** The class's Hope Feature — shown as a quick-ref card in the combat tab. */
+  hopeFeature: string;
 
   // Ancestry & community
   ancestryFeatures: string;
@@ -249,6 +251,7 @@ export function defaultCharacter(id: string): DaggerheartCharacter {
     foundationFeature: "",
     specializationFeature: "",
     masteryFeature: "",
+    hopeFeature: "",
     extraFeatures: [],
     ancestryFeatures: "",
     communityFeature: "",

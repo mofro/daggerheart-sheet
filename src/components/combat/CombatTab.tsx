@@ -54,6 +54,7 @@ export function CombatTab({
 }) {
   const id = character.id;
   const [showCondNotes, setShowCondNotes] = useState(false);
+  const [hopeOpen, setHopeOpen] = useState(false);
 
   const activeConditions = Object.values(character.conditions).filter(Boolean).length;
 
@@ -147,6 +148,22 @@ export function CombatTab({
         )}
       </div>
 
+      {/* Hope Feature quick-ref — only shown when text is set */}
+      {character.hopeFeature && (
+        <div class="ms-dh-hope-feature">
+          <button
+            class="ms-dh-hope-feature__header"
+            onClick={() => setHopeOpen((o) => !o)}
+          >
+            <span class="ms-dh-hope-feature__label">Hope Feature</span>
+            <span class={`ms-dh-hope-feature__chevron${hopeOpen ? " is-open" : ""}`} />
+          </button>
+          {hopeOpen && (
+            <div class="ms-dh-hope-feature__body">{character.hopeFeature}</div>
+          )}
+        </div>
+      )}
+
       {/* Weapons quick-reference */}
       {(character.primaryWeapon.name || character.secondaryWeapon.name) && (
         <div class="ms-dh-weapons">
@@ -168,6 +185,29 @@ export function CombatTab({
           )}
         </div>
       )}
+
+      {/* Rest actions */}
+      <div class="ms-dh-rests">
+        <button
+          class="ms-dh-rest-btn ms-dh-rest-btn--short"
+          onClick={() => store.updateCharacter(id, { stressCurrent: 0 })}
+          title="Clear all stress"
+        >
+          Short Rest
+        </button>
+        <button
+          class="ms-dh-rest-btn ms-dh-rest-btn--long"
+          onClick={() =>
+            store.updateCharacter(id, {
+              stressCurrent: 0,
+              hpCurrent: character.hpMax,
+            })
+          }
+          title="Restore HP to max and clear all stress"
+        >
+          Long Rest
+        </button>
+      </div>
 
     </div>
   );

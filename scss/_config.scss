@@ -647,6 +647,63 @@
   .inp::placeholder {
     color: var(--text-mute);
   }
+  /* textarea: full-width, resizable — apply alongside .inp */
+  .ta {
+    width: 100%;
+    min-height: auto;
+    resize: vertical;
+    line-height: 1.45;
+  }
+  /* full-width stacked field (label above, control below) */
+  .f.cfg-full {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  /* row-end control cluster (grow input + close iconbtn) */
+  .f__control.cfg-row-end {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .inp.cfg-flex {
+    flex: 1;
+    width: auto;
+  }
+  /* linked vault note display — shows below card name when noteRef is set */
+  .cfg-note-ref {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 2px 0 4px;
+  }
+  .cfg-note-ref__path {
+    font-size: 0.75em;
+    color: var(--link);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cfg-note-ref__clear {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    padding: 0 2px;
+    min-height: 0;
+    font-size: 0.9em;
+    line-height: 1;
+    &:hover { color: var(--ms-red); }
+  }
+
+  /* repeating list card (domain cards, connections) */
+  .cfg-card {
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--line);
+  }
 
   .btn {
     appearance: none;
