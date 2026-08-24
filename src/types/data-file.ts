@@ -46,6 +46,8 @@ export interface DaggerheartSettings {
   characterStorageFolder?: string;
   characterBackup?: boolean;
   characterBackupFolder?: string;
+  /** Vault folder prefix to pre-filter the domain card note picker. Empty = search whole vault. */
+  domainCardsFolder?: string;
 }
 
 /** Legacy alias — prefer DaggerheartSettings in new code. */
@@ -105,11 +107,11 @@ export const DEFAULT_SPELL_DB = {};
 export const DEFAULT_MANEUVER_DB = {};
 /** @deprecated PF1e — remove in Phase 2. */
 export const DEFAULT_EQUIP_DB = {};
-/** @deprecated PF1e — remove in Phase 2. */
+/** @deprecated PF1e — always returns false. */
 export type SpellDbState = Record<string, unknown>;
-/** @deprecated PF1e — remove in Phase 2. */
+/** @deprecated PF1e — always returns false. */
 export type ManeuverDbState = Record<string, unknown>;
-/** @deprecated PF1e — remove in Phase 2. */
+/** @deprecated PF1e — always returns false. */
 export type EquipDbState = Record<string, unknown>;
 /** @deprecated PF1e — always returns false. */
 export function eitrEnabled(_: unknown): boolean {
