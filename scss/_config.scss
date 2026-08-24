@@ -630,6 +630,14 @@
     border-color: var(--accent-line);
     box-shadow: none;
   }
+  .inp--invalid,
+  .sel.inp--invalid,
+  .num.inp--invalid {
+    border-color: rgba(194, 91, 81, 0.7);
+    &:focus {
+      border-color: #c25b51;
+    }
+  }
   .num {
     width: 64px;
     text-align: center;
@@ -976,7 +984,7 @@
     background: color-mix(in srgb, var(--accent) 12%, transparent);
   }
   .synccard.is-done .synccard__t::after {
-    content: "✓ added";
+    content: "\2713 added";
     font-family: var(--ms-font-label, "Taroca", sans-serif);
     font-size: 11px;
     letter-spacing: 0.04em;

@@ -180,6 +180,90 @@ function SignedIntInput({
  */
 const CUSTOM_SENTINEL = "__custom__";
 
+const TRAIT_ARRAY_VALUES = [2, 1, 1, 0, 0, -1] as const;
+const TRAIT_ARRAY_LABEL = "+2, +1, +1, 0, 0, −1";
+
+function fmtTrait(n: number): string {
+  return n > 0 ? `+${n}` : String(n);
+}
+
+function remainingTraitPool(allValues: number[], excludeIdx: number): number[] {
+  const pool = new Map<number, number>();
+  for (const v of TRAIT_ARRAY_VALUES) pool.set(v, (pool.get(v) ?? 0) + 1);
+  for (let i = 0; i < allValues.length; i++) {
+    if (i === excludeIdx) continue;
+    const v = allValues[i];
+    const cnt = pool.get(v) ?? 0;
+    if (cnt > 0) pool.set(v, cnt - 1);
+  }
+  return [...pool.entries()]
+    .filter(([, cnt]) => cnt > 0)
+    .map(([v]) => v)
+    .sort((a, b) => b - a);
+}
+
+function TraitArrayInput({
+  value,
+  available,
+  onChange,
+}: {
+  value: number;
+  available: number[];
+  onChange: (n: number) => void;
+}) {
+  const isInArray = (TRAIT_ARRAY_VALUES as readonly number[]).includes(value);
+  const isAvailable = available.includes(value);
+  const invalid = !isAvailable;
+
+  const [custom, setCustom] = useState(!isInArray);
+
+  useEffect(() => {
+    if (!(TRAIT_ARRAY_VALUES as readonly number[]).includes(value)) {
+      setCustom(true);
+    }
+  }, [value]);
+
+  if (custom) {
+    return (
+      <div class="cfg-row-end">
+        <button
+          class="iconbtn"
+          title="Back to standard array"
+          onClick={() => { setCustom(false); onChange(0); }}
+        >
+          <IconBack />
+        </button>
+        <SignedIntInput
+          class={`num cfg-flex${invalid ? " inp--invalid" : ""}`}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <select
+      class={`sel${invalid ? " inp--invalid" : ""}`}
+      value={isAvailable ? String(value) : ""}
+      onChange={e => {
+        const v = (e.target as HTMLSelectElement).value;
+        if (v === CUSTOM_SENTINEL) {
+          setCustom(true);
+        } else if (v !== "") {
+          onChange(parseInt(v));
+        }
+      }}
+    >
+      <option value="">— pick —</option>
+      {available.map(v => (
+        <option key={v} value={String(v)}>{fmtTrait(v)}</option>
+      ))}
+      <option value={CUSTOM_SENTINEL}>Custom…</option>
+    </select>
+  );
+}
+
 function PicklistInput({
   options,
   value,
@@ -375,20 +459,30 @@ function IdentitySection({ c, upd }: SectionProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function TraitsSection({ c, upd }: SectionProps) {
+  const traitValues = TRAITS.map(k => c.traits[k]);
   return (
     <>
       <div class="sec acc-teal">
-        <div class="sec__head"><span class="sec__title">Base Scores</span></div>
+        <div class="sec__head">
+          <span class="sec__title">Base Scores</span>
+          <span class="sec__desc">{TRAIT_ARRAY_LABEL}</span>
+        </div>
         <div class="statgrid">
-          {TRAITS.map(key => (
-            <div class="f" key={key}>
-              <label class="f__label">{TRAIT_LABELS[key]}</label>
-              <div class="f__control">
-                <input class="num" type="number" min={-3} max={6} value={c.traits[key]}
-                  onInput={e => upd({ traits: { ...c.traits, [key]: intVal(e, { min: -3, max: 6 }) } })} />
+          {TRAITS.map((key, idx) => {
+            const available = remainingTraitPool(traitValues, idx);
+            return (
+              <div class="f" key={key}>
+                <label class="f__label">{TRAIT_LABELS[key]}</label>
+                <div class="f__control">
+                  <TraitArrayInput
+                    value={c.traits[key]}
+                    available={available}
+                    onChange={n => upd({ traits: { ...c.traits, [key]: n } })}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <div class="sec acc-blue">
