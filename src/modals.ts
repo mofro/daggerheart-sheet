@@ -40,18 +40,28 @@ export class CharacterPickModal extends FuzzySuggestModal<CharacterRecord> {
   }
 }
 
-/** Pick any markdown note from the vault (used for domain card links). */
+/**
+ * Pick any markdown note from the vault (used for domain card and connection links).
+ * Pass a non-empty `folderPrefix` to pre-filter results to a specific vault folder.
+ */
 export class VaultNotePicker extends FuzzySuggestModal<TFile> {
   private onChoose: (file: TFile) => void;
+  private folderPrefix: string;
 
-  constructor(app: App, onChoose: (file: TFile) => void) {
+  constructor(app: App, onChoose: (file: TFile) => void, folderPrefix = "") {
     super(app);
-    this.setPlaceholder("Search vault notes…");
+    const trimmed = folderPrefix.trim().replace(/\/$/, "");
+    this.folderPrefix = trimmed ? trimmed + "/" : "";
+    this.setPlaceholder(
+      trimmed ? `Search notes in ${trimmed}…` : "Search vault notes…",
+    );
     this.onChoose = onChoose;
   }
 
   getItems(): TFile[] {
-    return this.app.vault.getMarkdownFiles();
+    const all = this.app.vault.getMarkdownFiles();
+    if (!this.folderPrefix) return all;
+    return all.filter((f) => f.path.startsWith(this.folderPrefix));
   }
 
   getItemText(file: TFile): string {
