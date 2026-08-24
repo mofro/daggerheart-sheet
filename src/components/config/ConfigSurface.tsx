@@ -385,9 +385,10 @@ function DomainsSection({
     setCards(c.domainCards.map((card, j) => (j === i ? { ...card, ...patch } : card)));
 
   function openNotePicker(i: number) {
+    const folderPrefix = plugin.store.data.value.settings.domainCardsFolder ?? "";
     new VaultNotePicker(plugin.app, (file) => {
       patchCard(i, { noteRef: file.path });
-    }).open();
+    }, folderPrefix).open();
   }
 
   return (
