@@ -490,7 +490,11 @@ function DomainsSection({
 // Section: Connections
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ConnectionsSection({ c, upd }: SectionProps) {
+function ConnectionsSection({
+  c,
+  upd,
+  plugin,
+}: SectionProps & { plugin: MiniSheetPlugin }) {
   const setConns = (connections: Connection[]) => upd({ connections });
   const addConn = () =>
     setConns([...c.connections, { characterName: "", description: "" }]);
@@ -498,6 +502,12 @@ function ConnectionsSection({ c, upd }: SectionProps) {
     setConns(c.connections.filter((_, j) => j !== i));
   const patchConn = (i: number, patch: Partial<Connection>) =>
     setConns(c.connections.map((conn, j) => (j === i ? { ...conn, ...patch } : conn)));
+
+  function openNotePicker(i: number) {
+    new VaultNotePicker(plugin.app, (file) => {
+      patchConn(i, { noteRef: file.path });
+    }).open();
+  }
 
   return (
     <div class="sec acc-blue">
@@ -519,11 +529,28 @@ function ConnectionsSection({ c, upd }: SectionProps) {
             <div class="f__control cfg-row-end">
               <input class="inp cfg-flex" value={conn.characterName} placeholder="Name"
                 onInput={e => patchConn(i, { characterName: strVal(e) })} />
+              <button class="iconbtn" title="Link vault note" onClick={() => openNotePicker(i)}>
+                <IconLink />
+              </button>
               <button class="iconbtn" title="Remove connection" onClick={() => removeConn(i)}>
                 <IconX />
               </button>
             </div>
           </div>
+          {conn.noteRef && (
+            <div class="cfg-note-ref">
+              <span class="cfg-note-ref__path" title={conn.noteRef}>
+                {conn.noteRef.split("/").pop()?.replace(/\.md$/, "") ?? conn.noteRef}
+              </span>
+              <button
+                class="cfg-note-ref__clear"
+                title="Remove link"
+                onClick={() => patchConn(i, { noteRef: undefined })}
+              >
+                ×
+              </button>
+            </div>
+          )}
           <div class="f cfg-full">
             <label class="f__label">Description</label>
             <textarea class="inp ta" rows={2} value={conn.description}
@@ -629,7 +656,7 @@ export function ConfigSurface({
             {section === "traits" && <TraitsSection c={character} upd={upd} />}
             {section === "defenses" && <DefensesSection c={character} upd={upd} />}
             {section === "domains" && <DomainsSection c={character} upd={upd} plugin={plugin} />}
-            {section === "connections" && <ConnectionsSection c={character} upd={upd} />}
+            {section === "connections" && <ConnectionsSection c={character} upd={upd} plugin={plugin} />}
             {section === "danger" && (
               <DangerSection c={character} store={store} onClose={onClose} />
             )}
