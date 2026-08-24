@@ -11,6 +11,13 @@ import {
   type Connection,
   type DomainName,
 } from "../../types/daggerheart";
+import {
+  ANCESTRIES,
+  COMMUNITIES,
+  CLASSES,
+  SUBCLASSES,
+  type ClassName,
+} from "../../data/daggerheart";
 
 type Section =
   | "identity"
@@ -83,6 +90,11 @@ const IconLink = () =>
   IC(<>
     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </>);
+
+const IconBack = () =>
+  IC(<>
+    <polyline points="15 18 9 12 15 6" />
   </>);
 
 const RAIL_ITEMS = [
@@ -160,11 +172,109 @@ function SignedIntInput({
   );
 }
 
+/**
+ * Select with a "Custom…" escape hatch. When the stored value isn't in the
+ * options list (migration / homebrew), it automatically opens in custom mode
+ * with the stored text pre-filled. The back-arrow button returns to the select
+ * and clears the value.
+ */
+const CUSTOM_SENTINEL = "__custom__";
+
+function PicklistInput({
+  options,
+  value,
+  placeholder,
+  onChange,
+}: {
+  options: readonly string[];
+  value: string;
+  placeholder?: string;
+  onChange: (v: string) => void;
+}) {
+  const isKnown = value === "" || options.includes(value);
+  const [custom, setCustom] = useState(!isKnown);
+  const [text, setText] = useState(isKnown ? "" : value);
+
+  useEffect(() => {
+    if (options.includes(value)) {
+      setCustom(false);
+    } else if (value === "") {
+      setCustom(false);
+      setText("");
+    } else if (!options.includes(value) && value !== text) {
+      setCustom(true);
+      setText(value);
+    }
+  }, [value, options]);
+
+  if (custom) {
+    return (
+      <div class="cfg-row-end">
+        <button
+          class="iconbtn"
+          title="Back to list"
+          onClick={() => {
+            setCustom(false);
+            setText("");
+            onChange("");
+          }}
+        >
+          <IconBack />
+        </button>
+        <input
+          class="inp cfg-flex"
+          type="text"
+          value={text}
+          placeholder={placeholder}
+          onInput={e => {
+            const v = (e.target as HTMLInputElement).value;
+            setText(v);
+            onChange(v);
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <select
+      class="sel"
+      value={value}
+      onChange={e => {
+        const v = (e.target as HTMLSelectElement).value;
+        if (v === CUSTOM_SENTINEL) {
+          setCustom(true);
+          setText("");
+          onChange("");
+        } else {
+          onChange(v);
+        }
+      }}
+    >
+      <option value="">— select —</option>
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+      <option value={CUSTOM_SENTINEL}>Custom…</option>
+    </select>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Section: Identity
 // ─────────────────────────────────────────────────────────────────────────────
 
 function IdentitySection({ c, upd }: SectionProps) {
+  const classSubclasses: readonly string[] =
+    SUBCLASSES[c.className as ClassName] ?? [];
+
+  function handleClassChange(cls: string) {
+    const patch: Partial<CharacterRecord> = { className: cls };
+    const subs: readonly string[] = SUBCLASSES[cls as ClassName] ?? [];
+    if (c.subclassName && !subs.includes(c.subclassName)) {
+      patch.subclassName = "";
+    }
+    upd(patch);
+  }
+
   return (
     <>
       <div class="sec acc-gold">
@@ -195,15 +305,23 @@ function IdentitySection({ c, upd }: SectionProps) {
         <div class="f">
           <label class="f__label">Ancestry</label>
           <div class="f__control">
-            <input class="inp" value={c.ancestry} placeholder="e.g. Human"
-              onInput={e => upd({ ancestry: strVal(e) })} />
+            <PicklistInput
+              options={ANCESTRIES}
+              value={c.ancestry}
+              placeholder="Homebrew ancestry"
+              onChange={v => upd({ ancestry: v })}
+            />
           </div>
         </div>
         <div class="f">
           <label class="f__label">Community</label>
           <div class="f__control">
-            <input class="inp" value={c.community} placeholder="e.g. Loreborne"
-              onInput={e => upd({ community: strVal(e) })} />
+            <PicklistInput
+              options={COMMUNITIES}
+              value={c.community}
+              placeholder="Homebrew community"
+              onChange={v => upd({ community: v })}
+            />
           </div>
         </div>
       </div>
@@ -212,15 +330,29 @@ function IdentitySection({ c, upd }: SectionProps) {
         <div class="f">
           <label class="f__label">Class</label>
           <div class="f__control">
-            <input class="inp" value={c.className} placeholder="e.g. Seraph"
-              onInput={e => upd({ className: strVal(e) })} />
+            <PicklistInput
+              options={CLASSES}
+              value={c.className}
+              placeholder="Homebrew class"
+              onChange={handleClassChange}
+            />
           </div>
         </div>
         <div class="f">
           <label class="f__label">Subclass</label>
           <div class="f__control">
-            <input class="inp" value={c.subclassName} placeholder="e.g. Divine Wielder"
-              onInput={e => upd({ subclassName: strVal(e) })} />
+            {classSubclasses.length > 0 ? (
+              <PicklistInput
+                options={classSubclasses}
+                value={c.subclassName}
+                placeholder="Homebrew subclass"
+                onChange={v => upd({ subclassName: v })}
+              />
+            ) : (
+              <input class="inp" value={c.subclassName}
+                placeholder="Subclass"
+                onInput={e => upd({ subclassName: strVal(e) })} />
+            )}
           </div>
         </div>
         <div class="f">
