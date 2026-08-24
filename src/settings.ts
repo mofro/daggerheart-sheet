@@ -32,6 +32,23 @@ export class MiniSheetSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
+      .setName("Domain cards folder")
+      .setDesc(
+        "Vault folder to pre-filter the domain card note picker. " +
+          "Leave empty to search the whole vault.",
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("e.g. DH/Domains")
+          .setValue(
+            this.plugin.store.data.value.settings.domainCardsFolder ?? "",
+          )
+          .onChange((value) => {
+            this.plugin.store.updateSettings({ domainCardsFolder: value });
+          }),
+      );
+
+    new Setting(containerEl)
       .setName("Custom items file")
       .setDesc(
         "JSON file holding custom item definitions, tracked by file name " +
