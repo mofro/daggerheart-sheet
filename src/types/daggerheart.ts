@@ -96,6 +96,8 @@ export interface GoldPurse {
 export interface Connection {
   characterName: string;
   description: string;
+  /** Vault note path linking this connection to a character/NPC file. */
+  noteRef?: string;
 }
 
 export interface ExtraFeature {
