@@ -1,10 +1,14 @@
 /** Canonical Daggerheart option lists — Core rulebook + Hope & Fear supplement. */
 
+// Core ancestries + Hope & Fear: Aetheris, Earthkin, Emberkin, Skykin, Tidekin
 export const ANCESTRIES = [
+  "Aetheris",
   "Clank",
   "Drakona",
   "Dwarf",
+  "Earthkin",
   "Elf",
+  "Emberkin",
   "Faerie",
   "Faun",
   "Fungril",
@@ -17,17 +21,26 @@ export const ANCESTRIES = [
   "Katari",
   "Ribbet",
   "Simiah",
+  "Skykin",
+  "Tidekin",
 ] as const;
 
+// Core communities + Hope & Fear: Duneborne, Freeborne, Frostborne, Hearthborne, Reborne, Warborne
 export const COMMUNITIES = [
+  "Duneborne",
+  "Freeborne",
+  "Frostborne",
+  "Hearthborne",
   "Highborne",
   "Loreborne",
   "Orderborne",
+  "Reborne",
   "Ridgeborne",
   "Seaborne",
   "Slyborne",
   "Underborne",
   "Wanderborne",
+  "Warborne",
   "Wildborne",
 ] as const;
 
