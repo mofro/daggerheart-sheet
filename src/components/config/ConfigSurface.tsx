@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import type MiniSheetPlugin from "../../main";
 import { VaultNotePicker } from "../../modals";
 import type { MiniSheetStore } from "../../state/store";
@@ -105,6 +105,59 @@ function strVal(e: Event): string {
 function intVal(e: Event, { min = -Infinity, max = Infinity, fallback = 0 } = {}): number {
   const v = parseInt((e.target as HTMLInputElement).value);
   return isNaN(v) ? fallback : Math.max(min, Math.min(max, v));
+}
+
+/**
+ * Signed integer input that accepts a leading minus sign while the user is
+ * typing. type="number" swallows the "-" key in Obsidian's WebView, so we use
+ * type="text" with inputmode="numeric" and a local raw-string state instead.
+ * The store is only updated when the string parses to a valid integer; on blur
+ * the display snaps to the clamped committed value.
+ */
+function SignedIntInput({
+  value,
+  min = -Infinity,
+  max = Infinity,
+  onChange,
+  class: cls,
+}: {
+  value: number;
+  min?: number;
+  max?: number;
+  onChange: (n: number) => void;
+  class?: string;
+}) {
+  const [raw, setRaw] = useState(String(value));
+
+  useEffect(() => {
+    const parsed = parseInt(raw);
+    if (isNaN(parsed) || parsed !== value) {
+      setRaw(String(value));
+    }
+  }, [value]);
+
+  return (
+    <input
+      class={cls}
+      type="text"
+      inputmode="numeric"
+      value={raw}
+      onInput={e => {
+        const s = (e.target as HTMLInputElement).value;
+        setRaw(s);
+        const n = parseInt(s);
+        if (!isNaN(n)) {
+          onChange(Math.max(min, Math.min(max, n)));
+        }
+      }}
+      onBlur={() => {
+        const n = parseInt(raw);
+        const clamped = isNaN(n) ? value : Math.max(min, Math.min(max, n));
+        setRaw(String(clamped));
+        onChange(clamped);
+      }}
+    />
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -214,8 +267,13 @@ function TraitsSection({ c, upd }: SectionProps) {
             <div class="f" key={key}>
               <label class="f__label">{TRAIT_LABELS[key]}</label>
               <div class="f__control">
-                <input class="num" type="number" min={-5} max={5} value={c.traitMods[key] ?? 0}
-                  onInput={e => upd({ traitMods: { ...c.traitMods, [key]: intVal(e, { min: -5, max: 5 }) } })} />
+                <SignedIntInput
+                  class="num"
+                  min={-5}
+                  max={5}
+                  value={c.traitMods[key] ?? 0}
+                  onChange={n => upd({ traitMods: { ...c.traitMods, [key]: n } })}
+                />
               </div>
             </div>
           ))}
