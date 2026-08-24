@@ -76,3 +76,25 @@ export const SUBCLASSES: Record<ClassName, readonly string[]> = {
   Witch: ["Hedge", "Moon"],
   Wizard: ["Wizard of Academy Arcana", "Wizard of the Grey"],
 };
+
+/**
+ * Starting Evasion per class (before armor).
+ * Core values: Daggerheart Core Rulebook.
+ * H&F values verified from Hope & Fear supplement text:
+ *   Assassin 12, Brawler 10, Warlock 11, Witch 10.
+ */
+export const CLASS_EVASION: Record<ClassName, number> = {
+  Assassin: 12,
+  Bard: 9,
+  Brawler: 10,
+  Druid: 10,
+  Guardian: 12,
+  Ranger: 10,
+  Rogue: 12,
+  Seraph: 11,
+  Sorcerer: 9,
+  Warlock: 11,
+  Warrior: 11,
+  Witch: 10,
+  Wizard: 9,
+};
