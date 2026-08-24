@@ -16,6 +16,7 @@ import {
   COMMUNITIES,
   CLASSES,
   SUBCLASSES,
+  CLASS_EVASION,
   type ClassName,
 } from "../../data/daggerheart";
 
@@ -271,6 +272,9 @@ function IdentitySection({ c, upd }: SectionProps) {
     const subs: readonly string[] = SUBCLASSES[cls as ClassName] ?? [];
     if (c.subclassName && !subs.includes(c.subclassName)) {
       patch.subclassName = "";
+    }
+    if (CLASSES.includes(cls as ClassName)) {
+      patch.baseEvasion = CLASS_EVASION[cls as ClassName];
     }
     upd(patch);
   }
