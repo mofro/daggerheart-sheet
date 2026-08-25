@@ -17,6 +17,7 @@ import {
   CLASSES,
   SUBCLASSES,
   CLASS_EVASION,
+  CLASS_DOMAINS,
   type ClassName,
 } from "../../data/daggerheart";
 
@@ -144,6 +145,7 @@ function SignedIntInput({
       type="text"
       inputmode="numeric"
       value={raw}
+      onFocus={e => (e.target as HTMLInputElement).select()}
       onInput={e => {
         const s = (e.target as HTMLInputElement).value;
         setRaw(s);
@@ -171,12 +173,14 @@ function fmtTrait(n: number): string {
   return n > 0 ? `+${n}` : String(n);
 }
 
-function remainingTraitPool(allValues: number[], excludeIdx: number): number[] {
+// null = untouched slot — excluded from pool consumption
+function remainingTraitPool(allValues: (number | null)[], excludeIdx: number): number[] {
   const pool = new Map<number, number>();
   for (const v of TRAIT_ARRAY_VALUES) pool.set(v, (pool.get(v) ?? 0) + 1);
   for (let i = 0; i < allValues.length; i++) {
     if (i === excludeIdx) continue;
     const v = allValues[i];
+    if (v == null) continue;
     const cnt = pool.get(v) ?? 0;
     if (cnt > 0) pool.set(v, cnt - 1);
   }
@@ -192,25 +196,25 @@ function isTraitArrayValid(traits: CharacterRecord["traits"]): boolean {
   return values.every((v, i) => v === target[i]);
 }
 
-/**
- * `anyPopulated` defers validation until the user has touched at least one
- * trait (non-zero), preventing fresh characters from opening with all red.
- * `forceValidate` overrides this at submit time so the user sees what's wrong.
- */
+// `validate` — show errors on this specific field (it has been touched by the user,
+//   or forceValidate is active). Untouched fields never show as invalid.
+// `onDeselect` — user picks the placeholder "0" option; resets field to untouched.
 function TraitArrayInput({
   value,
   available,
-  anyPopulated,
+  validate,
   onChange,
+  onDeselect,
 }: {
   value: number;
   available: number[];
-  anyPopulated: boolean;
+  validate: boolean;
   onChange: (n: number) => void;
+  onDeselect: () => void;
 }) {
   const isInArray = (TRAIT_ARRAY_VALUES as readonly number[]).includes(value);
   const isAvailable = available.includes(value);
-  const invalid = anyPopulated && !isAvailable;
+  const invalid = validate && !isAvailable;
 
   const [custom, setCustom] = useState(!isInArray);
 
@@ -226,7 +230,7 @@ function TraitArrayInput({
         <button
           class="iconbtn"
           title="Back to standard array"
-          onClick={() => { setCustom(false); onChange(0); }}
+          onClick={() => { setCustom(false); onDeselect(); }}
         >
           <IconBack />
         </button>
@@ -242,21 +246,23 @@ function TraitArrayInput({
   return (
     <select
       class={`sel${invalid ? " inp--invalid" : ""}`}
-      value={isAvailable ? String(value) : ""}
+      value={validate && isAvailable ? String(value) : ""}
       onChange={e => {
         const v = (e.target as HTMLSelectElement).value;
         if (v === CUSTOM_SENTINEL) {
           setCustom(true);
-        } else if (v !== "") {
+        } else if (v === "") {
+          onDeselect();
+        } else {
           onChange(parseInt(v));
         }
       }}
     >
-      <option value="">— pick —</option>
+      <option value="">0</option>
       {available.map(v => (
         <option key={v} value={String(v)}>{fmtTrait(v)}</option>
       ))}
-      <option value={CUSTOM_SENTINEL}>Custom…</option>
+      <option value={CUSTOM_SENTINEL}>?</option>
     </select>
   );
 }
@@ -353,6 +359,8 @@ function IdentitySection({ c, upd }: SectionProps) {
     }
     if (CLASSES.includes(cls as ClassName)) {
       patch.baseEvasion = CLASS_EVASION[cls as ClassName];
+      const [d1, d2] = CLASS_DOMAINS[cls as ClassName];
+      patch.domains = [d1 as DomainName, d2 as DomainName];
     }
     upd(patch);
   }
@@ -460,7 +468,12 @@ function TraitsSection({
   forceValidate = false,
 }: SectionProps & { forceValidate?: boolean }) {
   const traitValues = TRAITS.map(k => c.traits[k]);
-  const anyPopulated = forceValidate || traitValues.some(v => v !== 0);
+
+  // Track which fields the user has explicitly set. Init from persisted non-zero values.
+  const [touched, setTouched] = useState<Set<number>>(
+    () => new Set(traitValues.flatMap((v, i) => v !== 0 ? [i] : []))
+  );
+
   return (
     <>
       <div class="sec acc-teal">
@@ -470,7 +483,11 @@ function TraitsSection({
         </div>
         <div class="statgrid">
           {TRAITS.map((key, idx) => {
-            const available = remainingTraitPool(traitValues, idx);
+            // Only touched fields consume pool slots; untouched pass null.
+            const touchedValues = TRAITS.map((k, i) =>
+              touched.has(i) ? c.traits[k] : null
+            );
+            const available = remainingTraitPool(touchedValues, idx);
             return (
               <div class="f" key={key}>
                 <label class="f__label">{TRAIT_LABELS[key]}</label>
@@ -478,8 +495,19 @@ function TraitsSection({
                   <TraitArrayInput
                     value={c.traits[key]}
                     available={available}
-                    anyPopulated={anyPopulated}
-                    onChange={n => upd({ traits: { ...c.traits, [key]: n } })}
+                    validate={touched.has(idx) || forceValidate}
+                    onChange={n => {
+                      upd({ traits: { ...c.traits, [key]: n } });
+                      setTouched(prev => new Set(prev).add(idx));
+                    }}
+                    onDeselect={() => {
+                      upd({ traits: { ...c.traits, [key]: 0 } });
+                      setTouched(prev => {
+                        const next = new Set(prev);
+                        next.delete(idx);
+                        return next;
+                      });
+                    }}
                   />
                 </div>
               </div>
@@ -866,7 +894,7 @@ export function ConfigSurface({
           </h2>
           {warnClose && (
             <div class="cfg__warn">
-              <span>Trait scores don’t match the standard array (+2, +1, +1, 0, 0, −1) — some fields may be empty.</span>
+              <span>Trait scores don't match the standard array (+2, +1, +1, 0, 0, −1) — some fields may be empty.</span>
               <div class="cfg__warn-actions">
                 <button class="btn btn--sm btn--ghost" onClick={() => setWarnClose(false)}>Keep editing</button>
                 <button class="btn btn--sm" onClick={onClose}>Close anyway</button>

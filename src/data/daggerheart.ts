@@ -78,6 +78,29 @@ export const SUBCLASSES: Record<ClassName, readonly string[]> = {
 };
 
 /**
+ * Starting domains per class (two per class).
+ * Core values: Daggerheart Core Rulebook.
+ * H&F values verified from Hope & Fear supplement text.
+ */
+export const CLASS_DOMAINS: Record<ClassName, readonly [string, string]> = {
+  // Core Rulebook classes
+  Bard:     ["Grace",    "Codex"],
+  Druid:    ["Arcana",   "Sage"],
+  Guardian: ["Blade",    "Valor"],
+  Ranger:   ["Bone",     "Sage"],
+  Rogue:    ["Midnight", "Grace"],
+  Seraph:   ["Splendor", "Grace"],
+  Sorcerer: ["Arcana",   "Midnight"],
+  Warrior:  ["Blade",    "Valor"],
+  Wizard:   ["Arcana",   "Codex"],
+  // Hope & Fear supplement classes (domains verified from supplement text)
+  Assassin: ["Blade",    "Midnight"],
+  Brawler:  ["Valor",    "Bone"],
+  Warlock:  ["Dread",    "Grace"],
+  Witch:    ["Sage",     "Dread"],
+};
+
+/**
  * Starting Evasion per class (before armor).
  * Core values: Daggerheart Core Rulebook.
  * H&F values verified from Hope & Fear supplement text:
