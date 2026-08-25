@@ -89,7 +89,7 @@ export const CLASS_DOMAINS: Record<ClassName, readonly [string, string]> = {
   Guardian: ["Blade",    "Valor"],
   Ranger:   ["Bone",     "Sage"],
   Rogue:    ["Midnight", "Grace"],
-  Seraph:   ["Splendor", "Grace"],
+  Seraph:   ["Splendor", "Valor"],
   Sorcerer: ["Arcana",   "Midnight"],
   Warrior:  ["Blade",    "Valor"],
   Wizard:   ["Arcana",   "Codex"],
