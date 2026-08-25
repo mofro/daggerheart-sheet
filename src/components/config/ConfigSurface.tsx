@@ -202,18 +202,25 @@ function remainingTraitPool(allValues: number[], excludeIdx: number): number[] {
     .sort((a, b) => b - a);
 }
 
+/**
+ * `anyPopulated` defers validation until the user has touched at least one
+ * trait (i.e. set it to a non-zero value), preventing fresh characters from
+ * opening with all six fields highlighted red.
+ */
 function TraitArrayInput({
   value,
   available,
+  anyPopulated,
   onChange,
 }: {
   value: number;
   available: number[];
+  anyPopulated: boolean;
   onChange: (n: number) => void;
 }) {
   const isInArray = (TRAIT_ARRAY_VALUES as readonly number[]).includes(value);
   const isAvailable = available.includes(value);
-  const invalid = !isAvailable;
+  const invalid = anyPopulated && !isAvailable;
 
   const [custom, setCustom] = useState(!isInArray);
 
@@ -460,6 +467,7 @@ function IdentitySection({ c, upd }: SectionProps) {
 
 function TraitsSection({ c, upd }: SectionProps) {
   const traitValues = TRAITS.map(k => c.traits[k]);
+  const anyPopulated = traitValues.some(v => v !== 0);
   return (
     <>
       <div class="sec acc-teal">
@@ -477,6 +485,7 @@ function TraitsSection({ c, upd }: SectionProps) {
                   <TraitArrayInput
                     value={c.traits[key]}
                     available={available}
+                    anyPopulated={anyPopulated}
                     onChange={n => upd({ traits: { ...c.traits, [key]: n } })}
                   />
                 </div>
