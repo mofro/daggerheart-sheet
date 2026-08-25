@@ -79,8 +79,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ steps.tag.outputs.name }}"
-          # Delete any existing tag at the wrong commit, then recreate at HEAD
+          # Remove from remote (ignore 404 if it never existed)
           gh api repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG --method DELETE 2>/dev/null || true
+          # Remove from local checkout (fetch-depth:0 brings all tags down)
+          git tag -d "$TAG" 2>/dev/null || true
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
           git tag "$TAG"
