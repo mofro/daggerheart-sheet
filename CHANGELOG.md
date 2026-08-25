@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+**Evasion autofill** — selecting a standard Daggerheart class in the Config panel now automatically sets the base evasion value from the class table. Custom classes leave the field unchanged. Evasion can always be overridden manually.
+
+**Trait array distribution** — trait score dropdowns in the Config panel now enforce the Daggerheart standard array (+2, +1, +1, 0, 0, −1). The pool is computed symmetrically: if more traits claim a value than the array allows, all conflicting fields show a red border. Validation is deferred until at least one trait is set to a non-zero value, so fresh characters open without any red fields. Clicking Done with an incomplete or invalid distribution shows an amber warning banner and highlights the fields that need attention; Close anyway bypasses it.
+
+---
+
 ## 0.1.0
 
 Initial release of Daggerheart Sheet — an Obsidian sidebar plugin for Daggerheart characters.
