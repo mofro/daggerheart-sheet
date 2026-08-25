@@ -89,6 +89,7 @@
   .cfg__top {
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 12px;
     padding: 13px var(--pad) 11px;
     border-bottom: 1px solid var(--line);
@@ -148,6 +149,30 @@
   }
   .cfg__top-spacer {
     flex: 1;
+  }
+  /* amber warning banner — shown when Done is clicked with invalid traits */
+  .cfg__warn {
+    flex: 0 0 100%;
+    order: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--ms-gold) 13%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ms-gold) 35%, transparent);
+
+    > span {
+      flex: 1;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--ms-gold);
+    }
+  }
+  .cfg__warn-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
   }
   .cfg__work {
     flex: 1;
@@ -984,7 +1009,7 @@
     background: color-mix(in srgb, var(--accent) 12%, transparent);
   }
   .synccard.is-done .synccard__t::after {
-    content: "\2713 added";
+    content: "✓ added";
     font-family: var(--ms-font-label, "Taroca", sans-serif);
     font-size: 11px;
     letter-spacing: 0.04em;
