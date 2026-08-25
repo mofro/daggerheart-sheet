@@ -33,9 +33,7 @@ interface SectionProps {
   upd: (patch: Partial<CharacterRecord>) => void;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Rail icons — Lucide-style inline SVGs
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Rail icons — Lucide-style inline SVGs ──
 
 const IC = (children: preact.ComponentChildren) => (
   <svg
@@ -107,9 +105,7 @@ const RAIL_ITEMS = [
   { id: "danger" as const, label: "Danger", Icon: IconTrash },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Input helpers
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Input helpers ──
 
 function strVal(e: Event): string {
   return (e.target as HTMLInputElement | HTMLTextAreaElement).value;
@@ -120,13 +116,6 @@ function intVal(e: Event, { min = -Infinity, max = Infinity, fallback = 0 } = {}
   return isNaN(v) ? fallback : Math.max(min, Math.min(max, v));
 }
 
-/**
- * Signed integer input that accepts a leading minus sign while the user is
- * typing. type="number" swallows the "-" key in Obsidian's WebView, so we use
- * type="text" with inputmode="numeric" and a local raw-string state instead.
- * The store is only updated when the string parses to a valid integer; on blur
- * the display snaps to the clamped committed value.
- */
 function SignedIntInput({
   value,
   min = -Infinity,
@@ -173,13 +162,104 @@ function SignedIntInput({
   );
 }
 
-/**
- * Select with a "Custom…" escape hatch. When the stored value isn't in the
- * options list (migration / homebrew), it automatically opens in custom mode
- * with the stored text pre-filled. The back-arrow button returns to the select
- * and clears the value.
- */
 const CUSTOM_SENTINEL = "__custom__";
+
+const TRAIT_ARRAY_VALUES = [2, 1, 1, 0, 0, -1] as const;
+const TRAIT_ARRAY_LABEL = "+2, +1, +1, 0, 0, −1";
+
+function fmtTrait(n: number): string {
+  return n > 0 ? `+${n}` : String(n);
+}
+
+function remainingTraitPool(allValues: number[], excludeIdx: number): number[] {
+  const pool = new Map<number, number>();
+  for (const v of TRAIT_ARRAY_VALUES) pool.set(v, (pool.get(v) ?? 0) + 1);
+  for (let i = 0; i < allValues.length; i++) {
+    if (i === excludeIdx) continue;
+    const v = allValues[i];
+    const cnt = pool.get(v) ?? 0;
+    if (cnt > 0) pool.set(v, cnt - 1);
+  }
+  return [...pool.entries()]
+    .filter(([, cnt]) => cnt > 0)
+    .map(([v]) => v)
+    .sort((a, b) => b - a);
+}
+
+function isTraitArrayValid(traits: CharacterRecord["traits"]): boolean {
+  const values = TRAITS.map(k => traits[k]).sort((a, b) => a - b);
+  const target = [...TRAIT_ARRAY_VALUES].sort((a, b) => a - b);
+  return values.every((v, i) => v === target[i]);
+}
+
+/**
+ * `anyPopulated` defers validation until the user has touched at least one
+ * trait (non-zero), preventing fresh characters from opening with all red.
+ * `forceValidate` overrides this at submit time so the user sees what's wrong.
+ */
+function TraitArrayInput({
+  value,
+  available,
+  anyPopulated,
+  onChange,
+}: {
+  value: number;
+  available: number[];
+  anyPopulated: boolean;
+  onChange: (n: number) => void;
+}) {
+  const isInArray = (TRAIT_ARRAY_VALUES as readonly number[]).includes(value);
+  const isAvailable = available.includes(value);
+  const invalid = anyPopulated && !isAvailable;
+
+  const [custom, setCustom] = useState(!isInArray);
+
+  useEffect(() => {
+    if (!(TRAIT_ARRAY_VALUES as readonly number[]).includes(value)) {
+      setCustom(true);
+    }
+  }, [value]);
+
+  if (custom) {
+    return (
+      <div class="cfg-row-end">
+        <button
+          class="iconbtn"
+          title="Back to standard array"
+          onClick={() => { setCustom(false); onChange(0); }}
+        >
+          <IconBack />
+        </button>
+        <SignedIntInput
+          class={`num cfg-flex${invalid ? " inp--invalid" : ""}`}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <select
+      class={`sel${invalid ? " inp--invalid" : ""}`}
+      value={isAvailable ? String(value) : ""}
+      onChange={e => {
+        const v = (e.target as HTMLSelectElement).value;
+        if (v === CUSTOM_SENTINEL) {
+          setCustom(true);
+        } else if (v !== "") {
+          onChange(parseInt(v));
+        }
+      }}
+    >
+      <option value="">— pick —</option>
+      {available.map(v => (
+        <option key={v} value={String(v)}>{fmtTrait(v)}</option>
+      ))}
+      <option value={CUSTOM_SENTINEL}>Custom…</option>
+    </select>
+  );
+}
 
 function PicklistInput({
   options,
@@ -259,9 +339,7 @@ function PicklistInput({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Identity
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Identity ──
 
 function IdentitySection({ c, upd }: SectionProps) {
   const classSubclasses: readonly string[] =
@@ -374,25 +452,39 @@ function IdentitySection({ c, upd }: SectionProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Traits
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Traits ──
 
-function TraitsSection({ c, upd }: SectionProps) {
+function TraitsSection({
+  c,
+  upd,
+  forceValidate = false,
+}: SectionProps & { forceValidate?: boolean }) {
+  const traitValues = TRAITS.map(k => c.traits[k]);
+  const anyPopulated = forceValidate || traitValues.some(v => v !== 0);
   return (
     <>
       <div class="sec acc-teal">
-        <div class="sec__head"><span class="sec__title">Base Scores</span></div>
+        <div class="sec__head">
+          <span class="sec__title">Base Scores</span>
+          <span class="sec__desc">{TRAIT_ARRAY_LABEL}</span>
+        </div>
         <div class="statgrid">
-          {TRAITS.map(key => (
-            <div class="f" key={key}>
-              <label class="f__label">{TRAIT_LABELS[key]}</label>
-              <div class="f__control">
-                <input class="num" type="number" min={-3} max={6} value={c.traits[key]}
-                  onInput={e => upd({ traits: { ...c.traits, [key]: intVal(e, { min: -3, max: 6 }) } })} />
+          {TRAITS.map((key, idx) => {
+            const available = remainingTraitPool(traitValues, idx);
+            return (
+              <div class="f" key={key}>
+                <label class="f__label">{TRAIT_LABELS[key]}</label>
+                <div class="f__control">
+                  <TraitArrayInput
+                    value={c.traits[key]}
+                    available={available}
+                    anyPopulated={anyPopulated}
+                    onChange={n => upd({ traits: { ...c.traits, [key]: n } })}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <div class="sec acc-blue">
@@ -419,9 +511,7 @@ function TraitsSection({ c, upd }: SectionProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Defenses
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Defenses ──
 
 function DefensesSection({ c, upd }: SectionProps) {
   return (
@@ -503,9 +593,7 @@ function DefensesSection({ c, upd }: SectionProps) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Domains
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Domains ──
 
 function DomainsSection({
   c,
@@ -623,9 +711,7 @@ function DomainsSection({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Connections
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Connections ──
 
 function ConnectionsSection({
   c,
@@ -700,9 +786,7 @@ function ConnectionsSection({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section: Danger Zone
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Section: Danger Zone ──
 
 function DangerSection({
   c,
@@ -746,9 +830,7 @@ function DangerSection({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main surface
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Main surface ──
 
 export function ConfigSurface({
   plugin,
@@ -762,8 +844,18 @@ export function ConfigSurface({
   onClose: () => void;
 }) {
   const [section, setSection] = useState<Section>("identity");
+  const [warnClose, setWarnClose] = useState(false);
   const upd = (patch: Partial<CharacterRecord>) =>
     store.updateCharacter(character.id, patch);
+
+  function handleDone() {
+    if (!isTraitArrayValid(character.traits)) {
+      setWarnClose(true);
+      setSection("traits");
+    } else {
+      onClose();
+    }
+  }
 
   return (
     <div class="minisheet-config-root">
@@ -772,8 +864,17 @@ export function ConfigSurface({
           <h2 class="cfg__title">
             Configure <b>{character.name || "Character"}</b>
           </h2>
+          {warnClose && (
+            <div class="cfg__warn">
+              <span>Trait scores don’t match the standard array (+2, +1, +1, 0, 0, −1) — some fields may be empty.</span>
+              <div class="cfg__warn-actions">
+                <button class="btn btn--sm btn--ghost" onClick={() => setWarnClose(false)}>Keep editing</button>
+                <button class="btn btn--sm" onClick={onClose}>Close anyway</button>
+              </div>
+            </div>
+          )}
           <div class="cfg__top-spacer" />
-          <button class="btn btn--ghost btn--sm" onClick={onClose}>Done</button>
+          <button class="btn btn--ghost btn--sm" onClick={handleDone}>Done</button>
         </header>
         <div class="cfg__work">
           <nav class="rail">
@@ -781,7 +882,7 @@ export function ConfigSurface({
               <button
                 key={id}
                 class={`rail__item${section === id ? " is-active" : ""}`}
-                onClick={() => setSection(id)}
+                onClick={() => { setSection(id); setWarnClose(false); }}
               >
                 <span class="rail__ic"><Icon /></span>
                 <span class="rail__name">{label}</span>
@@ -790,7 +891,7 @@ export function ConfigSurface({
           </nav>
           <div class="detail">
             {section === "identity" && <IdentitySection c={character} upd={upd} />}
-            {section === "traits" && <TraitsSection c={character} upd={upd} />}
+            {section === "traits" && <TraitsSection c={character} upd={upd} forceValidate={warnClose} />}
             {section === "defenses" && <DefensesSection c={character} upd={upd} />}
             {section === "domains" && <DomainsSection c={character} upd={upd} plugin={plugin} />}
             {section === "connections" && <ConnectionsSection c={character} upd={upd} plugin={plugin} />}
