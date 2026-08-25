@@ -1,11 +1,18 @@
 name: Release Obsidian plugin
 
 # Obsidian/BRAT require the release tag to equal the manifest version exactly
-# (e.g. "0.1.0", no leading "v"). Push such a tag to cut a release.
+# (e.g. "0.1.0", no leading "v"). Push such a tag to cut a release, or
+# trigger manually via workflow_dispatch with the version input.
 on:
   push:
     tags:
       - "*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (must match manifest.json exactly, no "v" prefix)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,6 +23,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "name=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -32,7 +50,7 @@ jobs:
 
       - name: Verify tag matches manifest version
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${{ steps.tag.outputs.name }}"
           MANIFEST_VERSION="$(jq -r .version manifest.json)"
           if [ "$TAG" != "$MANIFEST_VERSION" ]; then
             echo "::error::Tag '$TAG' does not match manifest.json version '$MANIFEST_VERSION'."
@@ -45,20 +63,35 @@ jobs:
 
       - name: Build release notes from changelog
         run: |
-          NOTES="$(awk -v tag="$GITHUB_REF_NAME" '$1 == "##" && $2 == tag {grab=1; next} $1 == "##" {grab=0} grab' CHANGELOG.md)"
+          TAG="${{ steps.tag.outputs.name }}"
+          NOTES="$(awk -v tag="$TAG" '$1 == "##" && $2 == tag {grab=1; next} $1 == "##" {grab=0} grab' CHANGELOG.md)"
           if [ -z "$(printf '%s' "$NOTES" | tr -d '[:space:]')" ]; then
-            NOTES="Daggerheart Sheet $GITHUB_REF_NAME."
+            NOTES="Daggerheart Sheet $TAG."
           fi
           {
             printf '%s\n\n' "$NOTES"
             printf 'Install the three attached files into `<vault>/.obsidian/plugins/daggerheart-sheet/`, or add the repo via BRAT.\n'
           } > RELEASE_NOTES.md
 
+      - name: Ensure tag exists at HEAD (workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.tag.outputs.name }}"
+          # Delete any existing tag at the wrong commit, then recreate at HEAD
+          gh api repos/$GITHUB_REPOSITORY/git/refs/tags/$TAG --method DELETE 2>/dev/null || true
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git tag "$TAG"
+          git push origin "$TAG"
+
       - name: Create GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            --title "${GITHUB_REF_NAME}" \
+          TAG="${{ steps.tag.outputs.name }}"
+          gh release create "${TAG}" \
+            --title "${TAG}" \
             --notes-file RELEASE_NOTES.md \
             main.js styles.css manifest.json
