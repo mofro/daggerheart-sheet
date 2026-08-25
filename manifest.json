@@ -1,7 +1,7 @@
 {
 	"id": "daggerheart-sheet",
 	"name": "Daggerheart Sheet",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.8.7",
 	"description": "Daggerheart character sheet in Obsidian's sidebar — Hope/Fear tracking, HP/Stress/Evasion, class features, domain cards, and rules-note linking.",
 	"author": "mofro",
