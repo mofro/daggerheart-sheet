@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1
+
+**Trait validation fixes** — Config panel trait dropdowns now behave correctly:
+- Dropdowns correctly show `0` as a selectable value (previously the option was invisible).
+- Deselecting a trait (returning to the blank pick state) releases its value back to the pool so other fields can use it.
+- Only traits the player has explicitly touched participate in pool validation; untouched fields never show a red border.
+- Modifier fields select all text on focus so typing immediately replaces the existing value.
+
+**Class domain autofill** — selecting a class in Identity now automatically fills both domain slots from the class's starting domains (Core Rulebook and Hope & Fear classes). Domains can still be changed manually afterward.
+
+---
+
 ## 0.2.0
 
 **Evasion autofill** — selecting a standard Daggerheart class in the Config panel now automatically sets the base evasion value from the class table. Custom classes leave the field unchanged. Evasion can always be overridden manually.
