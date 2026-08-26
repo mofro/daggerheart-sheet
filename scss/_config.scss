@@ -378,6 +378,12 @@
   .statgrid .f > .f__control {
     width: auto;
   }
+  /* trait-array selects contain only short values (+2, +1, 0, −1, ?) —
+     override the default min-width so they don't overflow the label */
+  .statgrid .f > .f__control > .sel {
+    width: 72px;
+    min-width: 0;
+  }
 
   /* compact stat clusters (abilities, AC, energy) — no per-row dividers */
   .statgrid {

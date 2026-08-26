@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+**Trait dropdown width** — trait score dropdowns in the Config panel (Agility, Strength, Finesse, etc.) are now sized to their content. Previously the selects had a 120 px minimum width and overflowed into the adjacent label text when a value was selected. They are now 72 px wide, matching other compact numeric controls.
+
+---
+
 ## 0.2.1
 
 **Trait validation fixes** — Config panel trait dropdowns now behave correctly:
